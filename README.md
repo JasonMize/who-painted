@@ -1,7 +1,5 @@
-# DJANGO SEED
+# Who Painted
 
-Starting point for Django, Django Rest Framework, Angular, Webpack and Gulp projects.
+An educational site that helps students and art lovers learn to recognize works of art and their creators. 
 
-See the using-django-seed.md in the docs for usage.
-
-**Replace the contents of this doc with a README for your project**
+Built with Django / Python and Angular / Javascript.

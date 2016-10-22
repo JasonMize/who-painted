@@ -1,8 +1,8 @@
 {
-  "name": "",
+  "name": "Who Painted",
   "version": "1.0.0",
-  "description": "",
-  "repository": "",
+  "description": "An educational site for art recognition.",
+  "repository": "https://github.com/JasonMize/who-painted",
   "engines": {
     "node": "6.8.1"
   },
@@ -12,7 +12,7 @@
     "eslint": "eslint",
     "postinstall": "gulp webpack"
   },
-  "author": "",
+  "author": "Jason Mize",
   "license": "ISC",
   "devDependencies": {
   },

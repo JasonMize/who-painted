@@ -4,8 +4,8 @@ function ArtPageController(artAPIService, $interval) {
     const ctrl = this;
 
     function getArt() {
-        artAPIService.art.get().$promise.then((data) => {
-            ctrl.artworks = data.results;
+        artAPIService.artwork.get().$promise.then((data) => {
+            ctrl.paintings = data.results;
         });
     }
     getArt();

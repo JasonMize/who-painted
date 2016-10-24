@@ -7,6 +7,8 @@ BASE_DIR = Path(__file__).ancestor(3)
 TEMPLATE_DIR = BASE_DIR.child("templates")
 STATIC_FILE_DIR = BASE_DIR.child("static")
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+MEDIA_ROOT = BASE_DIR.child("media")
+MEDIA_URL = '/media/'
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.8/howto/deployment/checklist/

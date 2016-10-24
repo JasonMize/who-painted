@@ -1,7 +1,7 @@
 
 function artAPIService($resource) {
     const api = {
-        art: $resource('/api/artwork/:id/',
+        artwork: $resource('/api/artwork/:id/',
             { id: '@id' },
             {
                 update: {
@@ -9,6 +9,8 @@ function artAPIService($resource) {
                 },
             }),
     };
+
+    return api;
 }
 
 export default artAPIService;

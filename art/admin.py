@@ -12,6 +12,7 @@ class ArtworkAdmin(admin.ModelAdmin):
     list_display = (
         'title',
         'artist',
+        'image',
     )
 
 

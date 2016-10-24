@@ -1,11 +1,5 @@
 from django.contrib import admin
-from .models import Artwork, Artist
-
-
-class ArtworkAdmin(admin.ModelAdmin):
-    list_display = (
-        'title',
-    )
+from .models import Artist, Artwork
 
 
 class ArtistAdmin(admin.ModelAdmin):
@@ -14,6 +8,13 @@ class ArtistAdmin(admin.ModelAdmin):
     )
 
 
-admin.site.register(Artwork, ArtworkAdmin)
+class ArtworkAdmin(admin.ModelAdmin):
+    list_display = (
+        'title',
+        'artist',
+    )
+
+
 admin.site.register(Artist, ArtistAdmin)
+admin.site.register(Artwork, ArtworkAdmin)
 

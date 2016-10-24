@@ -1,3 +1,15 @@
 body {
+    padding-top: 70px;
     text-align: center;
 }
+
+.painting img {
+    max-width: 50vw;
+    max-height: 50vh;
+}
+
+
+
+
+
+

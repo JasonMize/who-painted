@@ -8,7 +8,7 @@ const artPageComponent = {
         artwork: '<',
     },
     controller: ArtPageController,
-    controllerAs: 'artPageCtrl',
+    controllerAs: 'apeCtrl',
 };
 
 export default artPageComponent;

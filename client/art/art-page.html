@@ -3,20 +3,26 @@
 
 <div class="row">
     <div class="col-md-10 col-md-offset-1 painting">
-        <img src="{{ artPageCtrl.paintings[artPageCtrl.randomNumber]['image'] }}" alt="">
+        <img src="{{ apeCtrl.randomPainting.image }}" alt="">
 
         <div>
-            {{ artPageCtrl.paintings[artPageCtrl.randomNumber]['title'] }}
+            Answer: {{ apeCtrl.randomPainting.title }}
         </div> 
         <div>
-            {{ artPageCtrl.paintings[artPageCtrl.randomNumber]['artist'] }}
+            Answer: {{ apeCtrl.randomPainting.artist.name }}
         </div> 
+
+        <div>
+            Wrong: {{ apeCtrl.artists[apeCtrl.randomArtistIndex].name }}
+        </div>
         
     </div>
 </div>
 
 
 <br>
-<pre>{{ artPageCtrl.artists | json }}</pre>
+<pre>Wrong Answers: {{ apeCtrl.wrongAnswers }}</pre>
 <br>
-<pre>{{ artPageCtrl.paintings | json }}</pre>
+<pre>Artists: {{ apeCtrl.artists | json }}</pre>
+<br>
+<pre>Paintings: {{ apeCtrl.paintings | json }}</pre>

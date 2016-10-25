@@ -13,6 +13,7 @@ class ArtistSerializer(serializers.ModelSerializer):
 
 
 class ArtworkSerializer(serializers.ModelSerializer):
+    artist = ArtistSerializer()
     class Meta:
         model = Artwork
         fields = (

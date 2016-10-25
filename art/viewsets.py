@@ -15,7 +15,4 @@ class ArtworkViewSet(viewsets.ModelViewSet):
     queryset = Artwork.objects.all()
     serializer_class = ArtworkSerializer
     
-    # def randomPainting(self):
-    #     randomPainting = random.sample(queryset, 1)   
 
-    

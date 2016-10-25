@@ -19,7 +19,6 @@ class ArtworkSerializer(serializers.ModelSerializer):
             'id',
             'title',
             'image',
-            # 'randomPainting',
         )
 
         

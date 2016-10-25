@@ -2,11 +2,14 @@
 <lead>Sign up for more fun and to track your progress. (free)</lead>
 
 <div class="row">
-    <div class="col-md-8 col-md-offset-2 painting">
-        <img src="{{ artPageCtrl.paintings[0]['image'] }}" alt="">
-        <!-- <img src="{{ artPageCtrl.paintings.randomPainting['image'] }}" alt=""> -->
+    <div class="col-md-10 col-md-offset-1 painting">
+        <img src="{{ artPageCtrl.paintings[artPageCtrl.randomNumber]['image'] }}" alt="">
+
         <div>
-            {{ artPageCtrl.paintings[0]['title'] }}
+            {{ artPageCtrl.paintings[artPageCtrl.randomNumber]['title'] }}
         </div> 
+        
+        <button class='btn btn-primary' ng-click='artPageCtrl.randomPic()'>Start</button>
+
     </div>
 </div>

@@ -8,8 +8,15 @@
         <div>
             {{ artPageCtrl.paintings[artPageCtrl.randomNumber]['title'] }}
         </div> 
+        <div>
+            {{ artPageCtrl.paintings[artPageCtrl.randomNumber]['artist'] }}
+        </div> 
         
-        <button class='btn btn-primary' ng-click='artPageCtrl.randomPic()'>Start</button>
-
     </div>
 </div>
+
+
+<br>
+<pre>{{ artPageCtrl.artists | json }}</pre>
+<br>
+<pre>{{ artPageCtrl.paintings | json }}</pre>

@@ -8,6 +8,11 @@ body {
     max-height: 60vh;
 }
 
+.wrong-answer {
+    text-decoration: line-through;
+    color: red;
+}
+
 footer {
     border-top: 1px solid #ccc;
 }

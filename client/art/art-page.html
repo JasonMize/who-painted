@@ -4,19 +4,15 @@
 <div class="row">
     <div class="col-md-10 col-md-offset-1 painting">
         <img src="{{ apeCtrl.randomPainting.image }}" alt="">
-
-        <div>
-            Answer: {{ apeCtrl.randomPainting.title }}
-        </div> 
-        <div>
-            Answer: {{ apeCtrl.randomPainting.artist.name }}
-        </div> 
         
+        <div ng-show='apeCtrl.correct'>CORRECT!</div>
+        <div ng-show='apeCtrl.incorrect'>That's not it. Try Again.</div>
+
 
         <form class='form-group' ng-repeat='name in apeCtrl.answerList'>
             <div class="radio">
-                <label>
-                    <input type="radio" name="artist" ng-model='$apeCtrl.answerList' value="name" ng-change='apeCtrl.userChoice(name)'>
+                <label ng-class='{ "wrong-answer" : $index == apeCtrl.nameIndex }'>
+                    <input type="radio" name="artist" ng-model='$apeCtrl.answerList' value="name" ng-change='apeCtrl.userChoice($index, name)'>
                     {{ name }}
                 </label>
             </div>
@@ -26,10 +22,13 @@
     </div>
 </div><!-- end row -->
 
+
 <br>
-<pre>Answers: {{ apeCtrl.answerList | json }}</pre>
+Debuggery...
+<pre>Painting Title: {{ apeCtrl.randomPainting.title }}</pre> 
+<pre>Artist Name: {{ apeCtrl.randomPainting.artist.name }}</pre> 
 <br>
-<pre>Wrong Answers: {{ apeCtrl.wrongAnswers | json }}</pre>
+<pre>answerList: {{ apeCtrl.answerList | json }}</pre>
 <br>
 <pre>Artists: {{ apeCtrl.artists | json }}</pre>
 <br>

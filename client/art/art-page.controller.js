@@ -1,6 +1,10 @@
 
 function ArtPageController(artAPIService) {
     const ctrl = this;
+    ctrl.correct = false;
+    ctrl.incorrect = false;
+    // ctrl.incorrectStyle = 'null';
+    ctrl.nameIndex = null;
 
 
     // get all Artwork objects
@@ -74,9 +78,19 @@ function ArtPageController(artAPIService) {
 
 
     // take user choice and determine right/wrong and take appropriate action
-    ctrl.userChoice = function userChoice(selection) {
+    ctrl.userChoice = function userChoice(index, selection) {
         console.log('user answer: ', selection);
-        
+        console.log('correct answer: ', ctrl.randomPainting.artist.name);
+        // if selection is correct...
+        if (selection === ctrl.randomPainting.artist.name) {
+            console.log('Match!');
+            ctrl.correct = true;
+            ctrl.incorrect = false;
+        } else {
+            console.log('wrong answer');
+            ctrl.incorrect = true;
+            ctrl.nameIndex = index;
+        }
     };
 
 

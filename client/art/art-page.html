@@ -11,17 +11,25 @@
         <div>
             Answer: {{ apeCtrl.randomPainting.artist.name }}
         </div> 
-
-        <div>
-            Wrong: {{ apeCtrl.artists[apeCtrl.randomArtistIndex].name }}
-        </div>
         
-    </div>
-</div>
 
+        <form class='form-group' ng-repeat='name in apeCtrl.answerList'>
+            <div class="radio">
+                <label>
+                    <input type="radio" name="artist" ng-model='$apeCtrl.answerList' value="name" ng-change='apeCtrl.userChoice(name)'>
+                    {{ name }}
+                </label>
+            </div>
+        </form>
+ 
+
+    </div>
+</div><!-- end row -->
 
 <br>
-<pre>Wrong Answers: {{ apeCtrl.wrongAnswers }}</pre>
+<pre>Answers: {{ apeCtrl.answerList | json }}</pre>
+<br>
+<pre>Wrong Answers: {{ apeCtrl.wrongAnswers | json }}</pre>
 <br>
 <pre>Artists: {{ apeCtrl.artists | json }}</pre>
 <br>

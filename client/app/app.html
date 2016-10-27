@@ -2,12 +2,49 @@
     <nav class="navbar navbar-default navbar-fixed-top">
         
         <div class="container menu">
+           
             <div class="navbar-header">
-                <span class="navbar-brand">
-                    <i class="fa fa-paint-brush"></i>
-                    Who Painted?
-                </span>
+                
+                <button
+                    type='button'
+                    class='navbar-toggle collapsed'
+                    data-toggle='collapse'
+                    data-target='#navbar-header-collapse'
+                    aria-expanded='false'
+                >
+                    <span class='sr-only'>Toggle navigations.</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                
+                <a href='#' class='navbar-brand'>
+                    <span>
+                        <i class="fa fa-paint-brush"></i>
+                    </span>
+                    <span class='menu-title'>
+                        Who Painted?
+                    </span>
+                </a>
+
             </div>
+        
+            <div id='navbar-header-collapse' class="collapse navbar-collapse">
+
+                    <ul class='navbar-text navbar-left menu-username menu-links'>
+                        Hello, User.
+                    </ul>
+
+                    <ul class='nav navbar-nav navbar-right'>
+                        <li>
+                            <a href="#">Sign Up</a>
+                        </li>
+                    </ul>
+
+            </div>
+                
+
+
         </div>
 
     </nav>

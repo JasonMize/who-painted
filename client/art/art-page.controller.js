@@ -17,6 +17,7 @@ function ArtPageController(artAPIService) {
     // get a random object from the Artwork array
     // use object for multiple choice
     function randomPic() {
+        console.log('random pic called');
         ctrl.maxRange = Math.floor(ctrl.paintings.length);
         ctrl.artIndex = Math.floor(Math.random() * (ctrl.maxRange));
         ctrl.randomPainting = ctrl.paintings[ctrl.artIndex];
@@ -86,13 +87,25 @@ function ArtPageController(artAPIService) {
     ctrl.userChoice = function userChoice(selection) {
         // if selection is correct...
         if (selection.name === ctrl.randomPainting.artist.name) {
+            // eslint-disable-next-line no-param-reassign
             selection.correct = true;
             ctrl.correctAnswer = true;
             ctrl.incorrectAnswer = false;
+        // if selection is wrong...
         } else {
+            // eslint-disable-next-line no-param-reassign
             selection.incorrect = true;
             ctrl.incorrectAnswer = true;
         }
+    };
+
+
+    // get next image and questions
+    ctrl.nextQuestion = function nextQuestion() {
+        ctrl.correctAnswer = false;
+        ctrl.incorrectAnswer = false;
+        randomPic();
+        wrongAnswers();
     };
 
 

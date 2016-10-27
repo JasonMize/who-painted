@@ -5,31 +5,28 @@ body {
 
 .painting img {
     max-width: 80vw;
-    max-height: 60vh;
+    max-height: 50vh;
 }
 
-.answer-form {
-}
 .answer-list {
     margin: 5px auto 10px auto;
-    width: 20vw;
 }
 .answer-button {
-    background-color: #0099CC;
+    background-color: #5bc0de;
     color: #f0f0f0;
-    padding: 8px 0px;
+    padding: 10px 5px;
     text-shadow: 1px 1px 2px #333;
-    width: 16vw;
+    margin: 5px 0px;
 }
 
 .wrong-answer {
     text-decoration: line-through;
-    color: red;
-    border: 1px solid red;
+    color: #fff;
+    background-color: #d9534f;
 }
 .correct-answer {
-    color: green; 
-    border: 1px solid green;
+    color: #fff; 
+    background-color: #5cb85c;
 }
 
 footer {

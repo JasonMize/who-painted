@@ -66,7 +66,7 @@ function ArtPageController(artAPIService) {
     // populate the wrong answers in multiple choice
     function wrongAnswers() {
         ctrl.wrongAnswers = [];
-        ctrl.numberOfWrongAnswers = 4;
+        ctrl.numberOfWrongAnswers = 3;
         while (ctrl.numberOfWrongAnswers > 0) {
             // get name
             randomArtist();

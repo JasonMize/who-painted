@@ -1,43 +1,55 @@
 <h2>Go ahead and play.</h2>
 <lead>Sign up for more fun and to track your progress. (free)</lead>
 
-<div class="row">
-    <div class="col-md-10 col-md-offset-1 painting">
+<div class="painting">
+    <img src="{{ apeCtrl.randomPainting.image }}" alt="">
+</div>
 
-        <img src="{{ apeCtrl.randomPainting.image }}" alt="">
+<h3>Who painted this?</h3>
 
-        <h3>Who painted this?</h3>
-
-        <div class='answer-list' ng-repeat='artist in apeCtrl.answerList'>
-            <button
-                class = "answer-button"
-                ng-class="{'correct-answer' : artist.correct, 'wrong-answer' : artist.incorrect}"
-                type='checkbox'
-                name='artist.name'
-                id='{{ artist.name }}'
-                ng-value='artist.name'
-                ng-click='apeCtrl.userChoice(artist)'
-            >
-                {{ artist.name }}
-            </button>
-        </div>
-
-        <div ng-show='apeCtrl.correctAnswer'>CORRECT!</div>
-        <div ng-show='apeCtrl.incorrectAnswer'>That's not it. Try Again.</div>
-  
-        <button 
-            class='btn btn-success' 
-            ng-show='apeCtrl.correctAnswer'
-            ng-click='apeCtrl.nextQuestion()'
+<div class='container'>
+    <div class='row' style='border: 1px solid blue;'>
+            
+        <span 
+            class='answer-list' 
+            ng-repeat='artist in apeCtrl.answerList'
         >
-            Next Painting
-        </button>
-    
+        
+            <div class='col-md-3 col-xs-6' style='border: 1px solid red;'>
+                <button
+                    class = "answer-button btn-block"
+                    ng-class="{
+                        'correct-answer' : artist.correct, 
+                        'wrong-answer' : artist.incorrect
+                    }"
+                    type='checkbox'
+                    name='artist.name'
+                    id='{{ artist.name }}'
+                    ng-value='artist.name'
+                    ng-click='apeCtrl.userChoice(artist)'
+                >{{ artist.name }}
+                </button>
+            </div>
+        
+        </span>
+
     </div>
-</div><!-- end row -->
+</div>
+
+<h2 ng-show='apeCtrl.correctAnswer'>CORRECT!</h2>
+<div ng-show='apeCtrl.incorrectAnswer'>That's not it. Try Again.</div>
+
+<button 
+    class='btn btn-success btn-lg' 
+    ng-show='apeCtrl.correctAnswer'
+    ng-click='apeCtrl.nextQuestion()'
+>
+    Next Painting
+</button>
+                
 
 
-<br>
+<hr style = >
 Debuggery...
 <pre>Painting Title: {{ apeCtrl.randomPainting.title }}</pre> 
 <pre>Artist Name: {{ apeCtrl.randomPainting.artist.name }}</pre> 

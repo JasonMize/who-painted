@@ -1,10 +1,8 @@
 
 function ArtPageController(artAPIService) {
     const ctrl = this;
-    ctrl.correct = false;
-    ctrl.incorrect = false;
-    // ctrl.incorrectStyle = 'null';
-    ctrl.nameIndex = null;
+    ctrl.correctAnswer = false;
+    ctrl.incorrectAnswer = false;
 
 
     // get all Artwork objects
@@ -43,24 +41,11 @@ function ArtPageController(artAPIService) {
     }
 
 
-    // populate the wrong answers in multiple choice
-    function wrongAnswers() {
-        ctrl.wrongAnswers = [];
-        ctrl.numberOfWrongAnswers = 4;
-        while (ctrl.numberOfWrongAnswers > 0) {
-            randomArtist();
-
-            // add to wrong answer list as long as it isn't the right answer
-            if (ctrl.artists[ctrl.artistIndex].name !== ctrl.randomPainting.artist.name) {
-                // add to wrong answer list as long as not a duplicate
-                if (ctrl.wrongAnswers.indexOf(ctrl.artists[ctrl.artistIndex].name) === -1) {
-                    ctrl.wrongAnswers.push(ctrl.artists[ctrl.artistIndex].name);
-                    ctrl.numberOfWrongAnswers -= 1;
-                }
-            }
-        }
+    // takes wrong answers and correct answer and creates answerList
+    function multipleChoiceList() {
         // add correct answer into wrong answers
         ctrl.wrongAnswers.push(ctrl.randomPainting.artist.name);
+
         // shuffle list
         ctrl.answerList = [];
         while (ctrl.wrongAnswers.length > 0) {
@@ -68,28 +53,45 @@ function ArtPageController(artAPIService) {
             ctrl.maxRange = Math.floor(ctrl.wrongAnswers.length);
             ctrl.answerIndex = Math.floor(Math.random() * (ctrl.maxRange));
             ctrl.name = ctrl.wrongAnswers.splice(ctrl.answerIndex, 1);
-            // place name in answer list
-            // strip off quotes and brackets
+            // place name in answer list and strip quotes and brackets
             for (let i = 0; i < ctrl.name.length; i += 1) {
-                ctrl.answerList.push(ctrl.name[i]);
+                const artist = { name: ctrl.name[i] };
+                ctrl.answerList.push(artist);
             }
         }
-    } // end wrongAnswers
+    }
+
+
+    // populate the wrong answers in multiple choice
+    function wrongAnswers() {
+        ctrl.wrongAnswers = [];
+        ctrl.numberOfWrongAnswers = 4;
+        while (ctrl.numberOfWrongAnswers > 0) {
+            // get name
+            randomArtist();
+            // add name to wrong answer list as long as it isn't the right answer
+            if (ctrl.artists[ctrl.artistIndex].name !== ctrl.randomPainting.artist.name) {
+                // add name to wrong answer list as long as not a duplicate
+                if (ctrl.wrongAnswers.indexOf(ctrl.artists[ctrl.artistIndex].name) === -1) {
+                    ctrl.wrongAnswers.push(ctrl.artists[ctrl.artistIndex].name);
+                    ctrl.numberOfWrongAnswers -= 1;
+                }
+            }
+        }
+        multipleChoiceList();
+    }
 
 
     // take user choice and determine right/wrong and take appropriate action
-    ctrl.userChoice = function userChoice(index, selection) {
-        console.log('user answer: ', selection);
-        console.log('correct answer: ', ctrl.randomPainting.artist.name);
+    ctrl.userChoice = function userChoice(selection) {
         // if selection is correct...
-        if (selection === ctrl.randomPainting.artist.name) {
-            console.log('Match!');
-            ctrl.correct = true;
-            ctrl.incorrect = false;
+        if (selection.name === ctrl.randomPainting.artist.name) {
+            selection.correct = true;
+            ctrl.correctAnswer = true;
+            ctrl.incorrectAnswer = false;
         } else {
-            console.log('wrong answer');
-            ctrl.incorrect = true;
-            ctrl.nameIndex = index;
+            selection.incorrect = true;
+            ctrl.incorrectAnswer = true;
         }
     };
 

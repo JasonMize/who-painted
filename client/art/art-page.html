@@ -3,22 +3,36 @@
 
 <div class="row">
     <div class="col-md-10 col-md-offset-1 painting">
+
         <img src="{{ apeCtrl.randomPainting.image }}" alt="">
-        
-        <div ng-show='apeCtrl.correct'>CORRECT!</div>
-        <div ng-show='apeCtrl.incorrect'>That's not it. Try Again.</div>
 
+        <h3>Who painted this?</h3>
 
-        <form class='form-group' ng-repeat='name in apeCtrl.answerList'>
-            <div class="radio">
-                <label ng-class='{ "wrong-answer" : $index == apeCtrl.nameIndex }'>
-                    <input type="radio" name="artist" ng-model='$apeCtrl.answerList' value="name" ng-change='apeCtrl.userChoice($index, name)'>
-                    {{ name }}
-                </label>
-            </div>
-        </form>
- 
+        <div class='answer-list' ng-repeat='artist in apeCtrl.answerList'>
+            <button
+                class = "answer-button"
+                ng-class="{'correct-answer' : artist.correct, 'wrong-answer' : artist.incorrect}"
+                type='checkbox'
+                name='artist.name'
+                id='{{ artist.name }}'
+                ng-value='artist.name'
+                ng-click='apeCtrl.userChoice(artist)'
+            >
+                {{ artist.name }}
+            </button>
+        </div>
 
+        <div ng-show='apeCtrl.correctAnswer'>CORRECT!</div>
+        <div ng-show='apeCtrl.incorrectAnswer'>That's not it. Try Again.</div>
+  
+        <button 
+            class='btn btn-success' 
+            ng-show='apeCtrl.correctAnswer'
+            ng-submit='apeCtrl.randomPic()'
+        >
+            Next Painting
+        </button>
+    
     </div>
 </div><!-- end row -->
 

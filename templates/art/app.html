@@ -1,0 +1,13 @@
+{% extends "core/base.html" %}
+{% load staticfiles %}
+
+{% block head_scripts %}
+    {{block.super}}
+    <script src="{% static 'bundle.js' %}"></script>
+{% endblock head_scripts %}
+
+{% block content %}
+    <div class="app-container" ng-app="app" ng-cloak>
+        <app />
+    </div>
+{% endblock content %}

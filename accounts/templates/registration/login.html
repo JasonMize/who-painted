@@ -1,0 +1,26 @@
+
+{% extends "core/base.html" %}
+
+{% block page_content %}
+    <h2>Login</h2>
+
+    {% if form.errors %}
+        <div class="alert alert-danger">
+            Your username and password didn't match. Please try again.
+        </div>
+    {% else %}
+        <p class="lead">
+            If you don't have an account you can <a href="{% url 'accounts:register' %}">register here</a>.
+        </p>
+        <p>Please use the form below to log in.</p>
+    {% endif %}
+    <form action="{% url 'accounts:login' %}" method="POST">
+        {% csrf_token %}
+        {% for field in form %}
+            {% include "core/_form_input.html" %}
+        {% endfor %}
+        <input type="hidden" name="next" value="{{next}}">
+        <button type="submit" class="btn btn-primary">Log In</button>
+    </form>
+{% endblock page_content %}
+

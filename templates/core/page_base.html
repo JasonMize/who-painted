@@ -1,0 +1,30 @@
+
+{% extends "core/base.html" %}
+
+{% block content %}
+<header>
+    <nav class="navbar navbar-inverse navbar-static-top">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <a ui-sref="index" class="navbar-brand">
+                    <i class="fa fa-paint-brush"></i> 
+                    Who Painted
+                </a>
+            </div>
+        </div>
+    </nav>
+</header>
+<div class="container">
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-success">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+    {% block page_content %}
+        
+    {% endblock page_content %}
+</div>
+{% endblock content %}
+

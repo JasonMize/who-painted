@@ -1,0 +1,12 @@
+{% extends "core/base.html" %}
+
+{% block page_content %}
+    <h2>Register</h2>
+    <form action="" method="post">
+        {% csrf_token %}
+        {% for field in form %}
+            {% include "core/_form_input.html" %}
+        {% endfor %}
+        <button class="btn btn-primary" type="submit">Register</button>
+    </form>
+{% endblock page_content %}

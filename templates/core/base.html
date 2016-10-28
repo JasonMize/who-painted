@@ -75,15 +75,24 @@
                 
                     <div id='navbar-header-collapse' class="collapse navbar-collapse">
 
-                            <ul class='navbar-text navbar-left menu-username menu-links'>
-                                Hello, User.
-                            </ul>
+                        <ul class='navbar-text navbar-left menu-username menu-links'>
+                            Hello, User.
+                        </ul>
 
-                            <ul class='nav navbar-nav navbar-right'>
+                        <ul class='nav navbar-nav navbar-right'>
+                            {% if request.user.is_authenticated %}
                                 <li>
-                                    <a href="#">Sign Up</a>
+                                    <a href='/accounts/logout'>Log Out</a>
                                 </li>
-                            </ul>
+                            {% else %}
+                                <li>
+                                    <a href='/accounts/login'>Log In</a>
+                                </li>
+                                <li>
+                                    <a href='/accounts/register'>Sign Up</a>
+                                </li>
+                            {% endif %}
+                        </ul>
 
                     </div>
                         

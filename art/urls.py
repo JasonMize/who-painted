@@ -4,5 +4,7 @@ from django.conf.urls import url
 from . import views
 
 urlpatterns = [
-    url(r'^$', login_required(views.AppView.as_view()), name='app'),
+    # url(r'^$', login_required(views.AppView.as_view()), name='app'),
+    url(r'^$', (views.AppView.as_view()), name='app'),
+
 ]

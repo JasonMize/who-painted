@@ -10,3 +10,4 @@ class ArtworkSerializer(generics.CreateAPIView):
 
 class AppView(TemplateView):
     template_name = 'art/app.html'
+    

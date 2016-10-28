@@ -17,7 +17,6 @@ function ArtPageController(artAPIService) {
     // get a random object from the Artwork array
     // use object for multiple choice
     function randomPic() {
-        console.log('random pic called');
         ctrl.maxRange = Math.floor(ctrl.paintings.length);
         ctrl.artIndex = Math.floor(Math.random() * (ctrl.maxRange));
         ctrl.randomPainting = ctrl.paintings[ctrl.artIndex];

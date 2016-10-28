@@ -62,12 +62,12 @@
                             <span class="icon-bar"></span>
                         </button>
                         
-                        <a href='#' class='navbar-brand'>
+                        <a href='{% url "core:index" %}' class='navbar-brand'>
                             <span>
                                 <i class="fa fa-paint-brush"></i>
                             </span>
                             <span class='menu-title'>
-                                Who Painted? - base.html
+                                Who Painted?
                             </span>
                         </a>
 
@@ -76,7 +76,7 @@
                     <div id='navbar-header-collapse' class="collapse navbar-collapse">
 
                         <ul class='navbar-text navbar-left menu-username menu-links'>
-                            Hello, User.
+                            Hello, {{ request.user }}!
                         </ul>
 
                         <ul class='nav navbar-nav navbar-right'>

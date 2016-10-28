@@ -15,7 +15,7 @@ class UserRegistrationForm(BootstrapFormMixin, forms.ModelForm):
 
     class Meta:
         model = User
-        fields = ('username', 'first_name', 'email')
+        fields = ('username', 'first_name', 'last_name', 'email')
 
 
     def clean_password2(self):

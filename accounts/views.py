@@ -1,8 +1,11 @@
 
 from django.shortcuts import render, redirect
 from django.contrib import messages
+from django.contrib.auth.models import User
+from rest_framework.generics import RetrieveAPIView
 
 from .forms import UserRegistrationForm
+from .serializers import CurrentUserSerializer
 
 def register(request):
     if request.method == "POST":
@@ -20,4 +23,12 @@ def register(request):
         form = UserRegistrationForm()
 
     return render(request, "accounts/register.html", {'form':form})
+
+
+class CurrentUserDetails(RetrieveAPIView):
+    model = User
+    serializer_class = CurrentUserSerializer
+
+    def get_object(self):
+        return self.request.user 
 

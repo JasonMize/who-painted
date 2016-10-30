@@ -3,12 +3,34 @@ function ArtPageController(artAPIService) {
     const ctrl = this;
     ctrl.correctAnswer = false;
     ctrl.incorrectAnswer = false;
+    ctrl.artSet = [];
+
+
+    // identify art pack and get art from it
+    function getArtPack() {
+        return artAPIService.artpack.get().$promise.then((data) => {
+            ctrl.artPack = data.results;
+
+            // get id of artPack
+            ctrl.packID = 1;
+
+            // loop all paintings and grab the ones that belong to art pack
+            for (let i = 0; i < ctrl.paintings.length; i += 1) {
+                if (ctrl.paintings[i].artPack === ctrl.packID) {
+                    ctrl.artSet.push(ctrl.paintings[i]);
+                }
+            }
+            console.log('artSet: ', ctrl.artSet);
+            return ctrl.artSet;
+        });
+    }
 
 
     // get all Artwork objects
     function getArt() {
         return artAPIService.artwork.get().$promise.then((data) => {
             ctrl.paintings = data.results;
+            getArtPack();
             return ctrl.paintings;
         });
     }

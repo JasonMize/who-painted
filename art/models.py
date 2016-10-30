@@ -14,6 +14,11 @@ class ArtPack(models.Model):
     def __str__(self):
         return self.title
 
+    # def artPackPaintings (self):
+    #     paintingSet = ArtPack.objects.get(title='Famous Western Paintings')
+    #     pack = paintingSet.artwork_set.all()
+    #     return pack
+
 
 class Artwork(models.Model):
     title = models.CharField(max_length=80)

@@ -26,10 +26,10 @@ class ArtworkSerializer(serializers.ModelSerializer):
 
 
 class ArtPackSerializer(serializers.ModelSerializer):
-    painting = ArtworkSerializer()
     class Meta:
         model = ArtPack
         fields = (
             'id',
             'title',
+            # 'artPackPaintings'
         )

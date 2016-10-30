@@ -20,6 +20,7 @@ class ArtworkAdmin(admin.ModelAdmin):
 class ArtPackAdmin(admin.ModelAdmin):
     list_display = (
         'title',
+        # 'artPackPaintings',
     )
 
 

@@ -1,8 +1,8 @@
 from rest_framework import viewsets
 import random
 
-from .models import Artwork, Artist
-from .serializers import ArtistSerializer, ArtworkSerializer
+from .models import Artist, Artwork, ArtPack
+from .serializers import ArtistSerializer, ArtworkSerializer, ArtPackSerializer
 
 
 class ArtistViewSet(viewsets.ModelViewSet):
@@ -15,4 +15,8 @@ class ArtworkViewSet(viewsets.ModelViewSet):
     queryset = Artwork.objects.all()
     serializer_class = ArtworkSerializer
     
+
+class ArtPackViewSet(viewsets.ModelViewSet):
+    queryset = ArtPack.objects.all()
+    serializer_class = ArtPackSerializer
 

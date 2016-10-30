@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Artist, Artwork
+from .models import Artist, Artwork, ArtPack
 
 
 class ArtistAdmin(admin.ModelAdmin):
@@ -13,9 +13,17 @@ class ArtworkAdmin(admin.ModelAdmin):
         'title',
         'artist',
         'image',
+        'artPack',
+    )
+
+
+class ArtPackAdmin(admin.ModelAdmin):
+    list_display = (
+        'title',
     )
 
 
 admin.site.register(Artist, ArtistAdmin)
 admin.site.register(Artwork, ArtworkAdmin)
+admin.site.register(ArtPack, ArtPackAdmin)
 

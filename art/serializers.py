@@ -31,5 +31,4 @@ class ArtPackSerializer(serializers.ModelSerializer):
         fields = (
             'id',
             'title',
-            # 'artPackPaintings'
         )

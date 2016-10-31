@@ -1,56 +1,72 @@
-<h2>Go ahead and play.</h2>
-<lead>Sign up for more fun and to track your progress. (free)</lead>
 
-<div class="painting">
-    <img src="{{ apeCtrl.randomPainting.image }}" alt="">
-</div>
+<div ng-show='!apeCtrl.lessonFinished'>
 
-<h3>Who painted this?</h3>
-
-<div class='container'>
-    <div class='row'>
-            
-        <span 
-            class='answer-list' 
-            ng-repeat='artist in apeCtrl.answerList'
-        >
-        
-            <div class='col-md-3 col-xs-6'>
-                <button
-                    class = "answer-button btn-block"
-                    ng-class="{
-                        'correct-answer' : artist.correct, 
-                        'wrong-answer' : artist.incorrect
-                    }"
-                    type='checkbox'
-                    name='artist.name'
-                    id='{{ artist.name }}'
-                    ng-value='artist.name'
-                    ng-click='apeCtrl.userChoice(artist)'
-                >{{ artist.name }}
-                </button>
-            </div>
-        
-        </span>
-
+    <h2>Famous Western Paintings</h2>
+    <div class="painting">
+        <img src="{{ apeCtrl.randomPainting.image }}" alt="">
     </div>
+
+    <h3>Who painted this?</h3>
+
+    <div class='container'>
+        <div class='row'>
+                
+            <span 
+                class='answer-list' 
+                ng-repeat='artist in apeCtrl.answerList'
+            >
+            
+                <div class='col-md-3 col-xs-6'>
+                    <button
+                        class = "answer-button btn-block"
+                        ng-class="{
+                            'correct-answer' : artist.correct, 
+                            'wrong-answer' : artist.incorrect
+                        }"
+                        type='checkbox'
+                        name='artist.name'
+                        id='{{ artist.name }}'
+                        ng-value='artist.name'
+                        ng-click='apeCtrl.userChoice(artist)'
+                    >{{ artist.name }}
+                    </button>
+                </div>
+            
+            </span>
+
+        </div>
+    </div>
+
+    <h2 ng-show='apeCtrl.correctAnswer'>CORRECT!</h2>
+    <div ng-show='apeCtrl.incorrectAnswer'>That's not it. Try Again.</div>
+
+    <button 
+        class='btn btn-success btn-lg' 
+        ng-show='apeCtrl.correctAnswer'
+        ng-click='apeCtrl.nextQuestion()'
+    >
+        Next Painting
+    </button>
+                
 </div>
 
-<h2 ng-show='apeCtrl.correctAnswer'>CORRECT!</h2>
-<div ng-show='apeCtrl.incorrectAnswer'>That's not it. Try Again.</div>
-
-<button 
-    class='btn btn-success btn-lg' 
-    ng-show='apeCtrl.correctAnswer'
-    ng-click='apeCtrl.nextQuestion()'
->
-    Next Painting
-</button>
-                
+<div class='sign-up-invite' ng-show='apeCtrl.lessonFinished'>
+    <h1>You win!</h1>
+    <h3>
+        <a href='/accounts/register'>Sign up</a> 
+        for more fun and to track your progress. (free)
+    </h3>
+    <h2>
+        <a href='/art'>
+            Play again.
+        </a>    
+    </h2>
+</div>
 
 
 <hr style='margin-top: 200px;''>
 Debuggery...
+<pre>Art Set: {{ apeCtrl.artSet | json }}</pre>
 <pre>Painting Title: {{ apeCtrl.randomPainting.title }}</pre> 
 <pre>Artist Name: {{ apeCtrl.randomPainting.artist.name }}</pre> 
 <br>

@@ -1,6 +1,10 @@
 
-function artAPIService($resource) {
+function artAPIService($resource, $http) {
     const api = {
+        getMe() {
+            return $http.get('/api/me/').then(response => response.data);
+        },
+
         artpack: $resource('/api/artpack/:id/',
             { id: '@id' },
             {
@@ -29,6 +33,7 @@ function artAPIService($resource) {
 
     return api;
 }
+
 
 export default artAPIService;
 

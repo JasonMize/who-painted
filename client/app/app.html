@@ -19,7 +19,7 @@
                     <span class="icon-bar"></span>
                 </button>
                 
-                <a href='' class='navbar-brand'>
+                <a href=' ' class='navbar-brand'>
                     <span>
                         <i class="fa fa-paint-brush"></i>
                     </span>
@@ -33,17 +33,17 @@
             <div id='navbar-header-collapse' class="collapse navbar-collapse">
 
                 <ul class='navbar-text navbar-left menu-username menu-links'>
-                    Username.
+                    Welcome {{ appCtrl.username }}                    
                 </ul>
 
                 <ul class='nav navbar-nav navbar-right'>
-                        <li ng-show='appCtrl.loggedIn'>
+                        <li ng-show='appCtrl.username'>
                             <a href='/accounts/logout'>Log Out</a>
                         </li>
-                        <li ng-show='!appCtrl.loggedIn'>
+                        <li ng-show='!appCtrl.username'>
                             <a href='/accounts/login'>Log In</a>
                         </li>
-                        <li ng-show='!appCtrl.loggedIn'>
+                        <li ng-show='!appCtrl.username'>
                             <a href='/accounts/register'>Sign Up</a>
                         </li>
                 </ul>

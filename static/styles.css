@@ -9,6 +9,7 @@ body {
 .painting img {
     max-width: 80vw;
     max-height: 50vh;
+    border: 5px solid #000;
 }
 
 .answer-list {
@@ -30,6 +31,10 @@ body {
 .correct-answer {
     color: #fff; 
     background-color: #5cb85c;
+}
+
+.sign-up-invite {
+    margin-top: 50px;
 }
 
 footer {

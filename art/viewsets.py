@@ -1,6 +1,8 @@
 from rest_framework import viewsets
 import random
 
+from django.contrib.auth.models import User
+
 from .models import Artist, Artwork, ArtPack
 from .serializers import ArtistSerializer, ArtworkSerializer, ArtPackSerializer
 
@@ -18,4 +20,5 @@ class ArtworkViewSet(viewsets.ModelViewSet):
 class ArtPackViewSet(viewsets.ModelViewSet):
     queryset = ArtPack.objects.all()
     serializer_class = ArtPackSerializer
+
 

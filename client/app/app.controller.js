@@ -1,9 +1,11 @@
 
 
-function AppController() {
+function AppController(artAPIService) {
     const ctrl = this;
 
-    ctrl.loggedIn = false;
+    artAPIService.getMe().then((me) => {
+        ctrl.username = me.username;
+    });
 }
 
 export default AppController;

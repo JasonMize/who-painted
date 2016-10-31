@@ -1,14 +1,14 @@
 import angular from 'angular';
 import uiRouter from 'angular-ui-router';
 import angularCookies from 'angular-cookies';
-import ScreenshotsModule from '../art/art.module';
+import ArtModule from '../art/art.module';
 
 import appComponent from './app.component';
 
 const AppModule = angular.module('app', [
     uiRouter,
     angularCookies,
-    ScreenshotsModule.name,
+    ArtModule.name,
 ])
     .component('app', appComponent)
     .config(($stateProvider, $urlRouterProvider) => {
@@ -17,20 +17,20 @@ const AppModule = angular.module('app', [
         $stateProvider.state('index', {
             url: '/',
             resolve: {
-                screenshots(screenshotsService) {
-                    return screenshotsService.getAllScreenshots();
+                art(artAPIService) {
+                    return artAPIService.getAllArt();
                 },
             },
-            component: 'screenshotsList',
-        }).state('screenshot', {
-            url: '/screenshot/{screenshotId}',
+            component: 'artList',
+        }).state('art', {
+            url: '/art/{artId}',
             resolve: {
-                screenshot(screenshotsService, $stateParams) {
-                    return screenshotsService
-                        .getScreenshot($stateParams.screenshotId);
+                art(artAPIService, $stateParams) {
+                    return artAPIService
+                        .getArt($stateParams.artId);
                 },
             },
-            component: 'screenshotsDetail',
+            component: 'artDetail',
         });
     })
     .run(($http, $cookies) => {

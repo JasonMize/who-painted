@@ -14,8 +14,7 @@
   },
   "author": "Jason Mize",
   "license": "ISC",
-  "devDependencies": {
-  },
+  "devDependencies": {},
   "dependencies": {
     "babel-core": "^6.17.0",
     "babel-eslint": "^7.0.0",

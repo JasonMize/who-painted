@@ -19,7 +19,7 @@ function artAPIService($resource, $http) {
                 update: {
                     method: 'PUT',
                 },
-            }
+            },
         ),
         artist: $resource('/api/artist/:id/',
             { id: '@id' },

@@ -19,6 +19,11 @@ const AppModule = angular.module('app', [
             .state('index', {
                 url: '/',
                 component: 'app',
+            })
+
+            .state('artPage', {
+                url: '/art',
+                component: 'artPage',
             });
     })
 

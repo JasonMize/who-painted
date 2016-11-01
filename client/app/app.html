@@ -24,7 +24,7 @@
                         <i class="fa fa-paint-brush"></i>
                     </span>
                     <span class='menu-title'>
-                        Who Painted?
+                        Who Painted? - angular header
                     </span>
                 </a>
 
@@ -32,9 +32,16 @@
         
             <div id='navbar-header-collapse' class="collapse navbar-collapse">
 
-                <ul class='navbar-text navbar-left menu-username menu-links'>
-                    Welcome {{ appCtrl.username }}                    
-                </ul>
+                <div class='
+                    navbar-text 
+                    navbar-left 
+                    menu-username 
+                    menu-links
+                '>
+                    <span ng-show='appCtrl.username'>
+                        Welcome {{ appCtrl.username }}                                            
+                    </span>
+                </div>
 
                 <ul class='nav navbar-nav navbar-right'>
                         <li ng-show='appCtrl.username'>
@@ -60,7 +67,9 @@
 
 <div class="container">
     <!-- <art-page /> -->
-    <ui-view></ui-view>
+
+    <div ui-view></div>
+
 </div>
 
 

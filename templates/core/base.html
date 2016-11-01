@@ -67,7 +67,7 @@
                                 <i class="fa fa-paint-brush"></i>
                             </span>
                             <span class='menu-title'>
-                                Who Painted?
+                                Who Painted? - Django header
                             </span>
                         </a>
 
@@ -75,9 +75,11 @@
                 
                     <div id='navbar-header-collapse' class="collapse navbar-collapse">
 
-                        <ul class='navbar-text navbar-left menu-username menu-links'>
-                            Hello, {{ request.user }}!
-                        </ul>
+                        {% if request.user.is_authenticated %}
+                            <ul class='navbar-text navbar-left menu-username menu-links'>
+                                Welcome, {{ request.user }}!
+                            </ul>
+                        {% endif %}
 
                         <ul class='nav navbar-nav navbar-right'>
                             {% if request.user.is_authenticated %}

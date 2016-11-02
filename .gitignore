@@ -6,5 +6,7 @@ __pycache__
 node_modules/
 npm-debug.log
 
-static/bundle.js
-static/bundle.js.map
+# Elastic Beanstalk Files
+.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml

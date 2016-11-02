@@ -41678,14 +41678,13 @@
 	    function getArtPack() {
 	        return artAPIService.artpack.get().$promise.then(function (data) {
 	            ctrl.artPack = data.results;
-	
 	            // get id of artPack
 	            ctrl.packID = 1;
 	
 	            // loop all paintings and grab the ones that belong to art pack
 	            ctrl.artSet = [];
 	            for (var i = 0; i < ctrl.paintings.length; i += 1) {
-	                if (ctrl.paintings[i].artPack === ctrl.packID) {
+	                if (ctrl.paintings[i].artPack.id === ctrl.packID) {
 	                    ctrl.artSet.push(ctrl.paintings[i]);
 	                }
 	            }
@@ -41725,7 +41724,6 @@
 	    };
 	
 	    function init() {
-	        console.log('here');
 	        ctrl.correctAnswer = false;
 	        ctrl.incorrectAnswer = false;
 	        ctrl.correctFirstTime = true;

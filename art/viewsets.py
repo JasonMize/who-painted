@@ -24,16 +24,16 @@ class ArtPackViewSet(viewsets.ModelViewSet):
 
 class LevelViewSet(viewsets.ModelViewSet):
     queryset = Level.objects.all()
-    serializer_class = LevelViewSerializer
+    serializer_class = LevelSerializer
 
 
 class UserLevelViewSet(viewsets.ModelViewSet):
-    queryset = level.objects.all()
+    queryset = UserLevel.objects.all()
     serializer_class = UserLevelSerializer
 
 
 class UserArtPackViewSet(viewsets.ModelViewSet):
-    queryset = level.objects.all()
+    queryset = UserArtPack.objects.all()
     serializer_class = UserArtPackSerializer
 
 

@@ -2,6 +2,7 @@ from rest_framework import serializers
 from django.contrib.auth.models import User
 
 from .models import Artist, Artwork, ArtPack, Level, UserLevel, UserArtPack
+from accounts.serializers import CurrentUserSerializer
 
 
 class ArtistSerializer(serializers.ModelSerializer):
@@ -10,6 +11,15 @@ class ArtistSerializer(serializers.ModelSerializer):
         fields = (
             'id',
             'name',
+        )
+
+
+class ArtPackSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ArtPack
+        fields = (
+            'id',
+            'title',
         )
 
 
@@ -23,15 +33,7 @@ class ArtworkSerializer(serializers.ModelSerializer):
             'artist',
             'title',
             'image',
-        )
-
-
-class ArtPackSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = ArtPack
-        fields = (
-            'id',
-            'title',
+            'artPack',
         )
 
 
@@ -42,26 +44,31 @@ class LevelSerializer(serializers.ModelSerializer):
         fields = (
             'id', 
             'title',
+            'artPack',
         )
 
 
 class UserLevelSerializer(serializers.ModelSerializer):
-    user = UserSerializer()
+    user = CurrentUserSerializer()
     level = LevelSerializer()
     class Meta:
         model = UserLevel
         fields = (
             'id',
+            'user',
+            'level',
         )
 
 
 class UserArtPackSerializer(serializers.ModelSerializer):
-    user = UserSerializer()
+    user = CurrentUserSerializer()
     artPack = ArtPackSerializer()
     class Meta:
         model = UserArtPack
         fields = (
             'id',
+            'user',
+            'artPack',
         )
 
 

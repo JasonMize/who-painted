@@ -21,9 +21,14 @@ const AppModule = angular.module('app', [
                 component: 'app',
             })
 
-            .state('artPage', {
+            .state('artistLevel1', {
                 url: '/art',
-                component: 'artPage',
+                component: 'artistLevel1',
+            })
+
+            .state('artStaging', {
+                url: '/art',
+                component: 'artStaging',
             });
     })
 

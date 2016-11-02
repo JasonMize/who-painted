@@ -2,8 +2,7 @@ from django.views.generic import TemplateView
 from rest_framework import generics
 from rest_framework.parsers import MultiPartParser
 
-from .models import Artwork, Artist, ArtPack
-from .serializers import ArtworkSerializer, ArtistSerializer
+from .serializers import ArtworkSerializer
 
 
 

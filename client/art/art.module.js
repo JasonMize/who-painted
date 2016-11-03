@@ -3,14 +3,17 @@ import angularResource from 'angular-resource';
 
 import artAPIService from './art-api.service';
 import artPageComponent from './art-page.component';
+import artStagingComponent from './art-staging.component';
 
 const ArtModule = angular.module('art', [
-    'ngResource',
     angularResource,
-]).config(($resourceProvider) => {
+])
+    .config(($resourceProvider) => {
+    // eslint-disable-next-line no-param-reassign
     $resourceProvider.defaults.stripTrailingSlashes = false;
-})
-    .factory('artAPIService', artAPIService)
-    .component('artPage', artPageComponent);
+    })
+        .factory('artAPIService', artAPIService)
+        .component('artPage', artPageComponent)
+        .component('artStaging', artStagingComponent);
 
 export default ArtModule;

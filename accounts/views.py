@@ -3,6 +3,7 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth.models import User
 from rest_framework.generics import RetrieveAPIView
+from rest_framework.permissions import IsAuthenticated
 
 from .forms import UserRegistrationForm
 from .serializers import CurrentUserSerializer
@@ -28,7 +29,8 @@ def register(request):
 class CurrentUserDetails(RetrieveAPIView):
     model = User
     serializer_class = CurrentUserSerializer
-
+    permission_classes = (IsAuthenticated, )
+    
     def get_object(self):
         return self.request.user 
 

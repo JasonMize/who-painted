@@ -8,10 +8,8 @@ function ArtPageController(artAPIService) {
         // if selection is correct...
         if (selection.name === ctrl.randomPainting.artist.name) {
             // if they get it correct first try, remove painting from pack
-            console.log('correct: ', ctrl.artSet);
             if (ctrl.correctFirstTime === true) {
                 ctrl.artSet.splice(ctrl.artIndex, 1);
-                console.log('list after slice: ', ctrl.artSet);
             }
 
             // eslint-disable-next-line no-param-reassign
@@ -24,7 +22,6 @@ function ArtPageController(artAPIService) {
             // eslint-disable-next-line no-param-reassign
             selection.incorrect = true;
             ctrl.incorrectAnswer = true;
-            console.log('wrong: ', ctrl.artSet);
             ctrl.correctFirstTime = false;
         }
 

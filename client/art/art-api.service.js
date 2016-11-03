@@ -29,6 +29,30 @@ function artAPIService($resource, $http) {
                 },
             }
         ),
+        level: $resource('/api/level/:id/',
+            { id: '@id' },
+            {
+                update: {
+                    method: 'PUT',
+                },
+            }
+        ),
+        userlevel: $resource('/api/userlevel/:id/',
+            { id: '@id' },
+            {
+                update: {
+                    method: 'PUT',
+                },
+            }
+        ),
+        userartpack: $resource('/api/userartpack/:id/',
+            { id: '@id' },
+            {
+                update: {
+                    method: 'PUT',
+                },
+            }
+        ),
     };
 
     return api;

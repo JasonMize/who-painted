@@ -4,9 +4,9 @@ import ArtPageController from './art-page.controller';
 
 const artPageComponent = {
     template,
-    bindings: {
-        artwork: '<',
-    },
+    // bindings: {
+        // artwork: '<',
+    // },
     controller: ArtPageController,
     controllerAs: 'apeCtrl',
 };

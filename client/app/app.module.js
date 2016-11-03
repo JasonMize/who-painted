@@ -5,6 +5,7 @@ import angularCookies from 'angular-cookies';
 import ArtModule from '../art/art.module';
 import appComponent from './app.component';
 
+
 const AppModule = angular.module('app', [
     uiRouter,
     angularCookies,
@@ -18,16 +19,21 @@ const AppModule = angular.module('app', [
         $stateProvider
             .state('index', {
                 url: '/',
-                component: 'app',
+                component: 'artPage',
             })
 
-            .state('artistLevel1', {
+            .state('artPage', {
                 url: '/art',
-                component: 'artistLevel1',
+                component: 'artPage',
             })
+
+            // .state('artPackLevel', {
+            //     url: '/art',
+            //     component: 'artPackLevel',
+            // })
 
             .state('artStaging', {
-                url: '/art',
+                url: '/staging',
                 component: 'artStaging',
             });
     })

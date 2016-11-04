@@ -19,7 +19,7 @@ function ArtLessonController(artAPIService, $stateParams, $state) {
             // console.log('lesson data: ', data);
         });
     }
-
+ 
 
     // take user choice and determine right/wrong and take appropriate action
     ctrl.userChoice = function userChoice(selection) {
@@ -176,7 +176,7 @@ function ArtLessonController(artAPIService, $stateParams, $state) {
 
         // if you've gotten everything correct
         } else {
-            $state.go('artStaging');
+            $state.go('artLevels', { artpackId: $stateParams.artpackId });
         }
         // console.log('nextQuestion');
     };

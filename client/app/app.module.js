@@ -38,7 +38,7 @@ const AppModule = angular.module('app', [
             })
 
             .state('artLevels', {
-                url: '/levels/{artpackId}',
+                url: '/staging/{artpackId}/levels',
                 component: 'artLevels',
                 resolve: {
                     // for filtering of levels to specific artpack
@@ -50,7 +50,7 @@ const AppModule = angular.module('app', [
             })
 
             .state('artLesson', {
-                url: '/lesson/{levelId}',
+                url: '/staging/{artpackId}/levels/{levelId}/lesson',
                 component: 'artLesson',
                 resolve: {
                     levelId(artAPIService, $stateParams) {

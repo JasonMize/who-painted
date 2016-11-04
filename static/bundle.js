@@ -96,7 +96,7 @@
 	        url: '/staging',
 	        component: 'artStaging'
 	    }).state('artLevels', {
-	        url: '/levels/{artpackId}',
+	        url: '/staging/{artpackId}/levels',
 	        component: 'artLevels',
 	        resolve: {
 	            // for filtering of levels to specific artpack
@@ -105,7 +105,7 @@
 	            }
 	        }
 	    }).state('artLesson', {
-	        url: '/lesson/{levelId}',
+	        url: '/staging/{artpackId}/levels/{levelId}/lesson',
 	        component: 'artLesson',
 	        resolve: {
 	            levelId: function levelId(artAPIService, $stateParams) {
@@ -41958,7 +41958,7 @@
 /* 21 */
 /***/ function(module, exports) {
 
-	module.exports = "<div>\n\n    <h2>Art Pack Levels</h2>\n\n    <div>\n        Select an art pack level.\n    </div>\n\n    <hr>\n\n    <div class=\"row\">\n\n        <div ng-repeat='level in levelsCtrl.levels' >\n            <a ui-sref='artLesson ({ levelId: level.id })'>            \n                <div class=\"col-sm-3\">\n                    <div class=\"staging-artpacks\">\n\n                        <div>\n                            {{ level.title }}\n                        </div>\n                        \n                    </div>\n                </div>\n            <!-- </a> -->\n        <!-- </div> -->\n\n    </div>\n\n</div>"
+	module.exports = "<div>\n\n    <h2>Art Pack Levels</h2>\n\n    <div>\n        Select an art pack level.\n    </div>\n\n    <hr>\n\n    <div class=\"row\">\n\n        <div ng-repeat='level in levelsCtrl.levels' >\n            <a ui-sref='artLesson ({ artpackId: levelsCtrl.artpackId, levelId: level.id })'>            \n                <div class=\"col-sm-3\">\n                    <div class=\"staging-artpacks\">\n\n                        <div>\n                            {{ level.title }}\n                        </div>\n                        \n                    </div>\n                </div>\n            <!-- </a> -->\n        <!-- </div> -->\n\n    </div>\n\n</div>"
 
 /***/ },
 /* 22 */
@@ -41971,17 +41971,16 @@
 	});
 	function ArtLevelsController(artAPIService, $stateParams, $state) {
 	    var ctrl = this;
-	
+	    ctrl.artpackId = $stateParams.artpackId;
 	    // if not logged in keep on artPage
 	    artAPIService.getMe().then(function (me) {
 	        ctrl.username = me.username;
-	        // if logged in load state...
-	    },
-	    // if not logged in load state...
+	    }, // else, if not logged in load state...
 	    function () {
 	        $state.go('artPage');
 	    });
 	
+	    // get levels of a particular art pack
 	    function getLevels() {
 	        var id = { id: $stateParams.artpackId };
 	        return artAPIService.artpacklevel.get(id).$promise.then(function (data) {
@@ -42207,7 +42206,7 @@
 	
 	            // if you've gotten everything correct
 	        } else {
-	            $state.go('artStaging');
+	            $state.go('artLevels', { artpackId: $stateParams.artpackId });
 	        }
 	        // console.log('nextQuestion');
 	    };

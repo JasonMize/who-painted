@@ -1,0 +1,28 @@
+<div>
+
+    <h2>Art Pack Levels</h2>
+
+    <div>
+        Select an art pack level.
+    </div>
+    <hr>
+    {{ levelCtrl.levels }}
+    <div class="row">
+
+        <div ng-repeat='level in levelsCtrl.levels' >
+            <a ui-sref='artPage'>            
+                <div class="col-sm-3">
+                    <div class="staging-artpacks">
+
+                        <div>
+                            {{ level.title }}
+                        </div>
+                        
+                    </div>
+                </div>
+            <!-- </a> -->
+        <!-- </div> -->
+
+    </div>
+
+</div>

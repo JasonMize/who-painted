@@ -37,6 +37,21 @@ body {
     margin-top: 50px;
 }
 
+.staging-artpacks {
+    border: 1px solid 999;
+    background-color: #ccc;
+    margin: 10px;
+    padding: 30px;
+}
+.staging-artpacks img {
+    border: 5px solid black;
+    width: 100%;
+}
+.staging-titles {
+    font-size: 1.5em;
+    margin-bottom: 5px
+}
+
 footer {
     border-top: 1px solid #ccc;
 }

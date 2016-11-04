@@ -14,7 +14,8 @@ router.register(r'level', LevelViewSet)
 router.register(r'artpack', ArtPackViewSet)
 router.register(r'artwork', ArtworkViewSet)
 router.register(r'artist', ArtistViewSet)
-
+router.register(r'artpackartwork', ArtPackArtworkViewSet)
+router.register(r'artpacklevel', ArtPackLevelViewSet)
 
 urlpatterns = [
     url(r'^', include(router.urls)),

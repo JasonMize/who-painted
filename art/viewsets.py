@@ -22,6 +22,16 @@ class ArtPackViewSet(viewsets.ModelViewSet):
     serializer_class = ArtPackSerializer
 
 
+class ArtPackArtworkViewSet(viewsets.ModelViewSet):
+    queryset = ArtPack.objects.all()
+    serializer_class = ArtPackArtworkSerializer
+
+
+class ArtPackLevelViewSet(viewsets.ModelViewSet):
+    queryset = ArtPack.objects.all()
+    serializer_class = ArtPackLevelSerializer
+    
+
 class LevelViewSet(viewsets.ModelViewSet):
     queryset = Level.objects.all()
     serializer_class = LevelSerializer
@@ -35,7 +45,6 @@ class UserLevelViewSet(viewsets.ModelViewSet):
 class UserArtPackViewSet(viewsets.ModelViewSet):
     queryset = UserArtPack.objects.all()
     serializer_class = UserArtPackSerializer
-
 
 
 

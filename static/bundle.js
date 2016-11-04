@@ -74,7 +74,7 @@
 	
 	var _art2 = _interopRequireDefault(_art);
 	
-	var _app = __webpack_require__(17);
+	var _app = __webpack_require__(23);
 	
 	var _app2 = _interopRequireDefault(_app);
 	
@@ -89,16 +89,21 @@
 	    }).state('artPage', {
 	        url: '/art',
 	        component: 'artPage'
-	    })
-	
-	    // .state('artPackLevel', {
-	    //     url: '/art',
-	    //     component: 'artPackLevel',
-	    // })
-	
-	    .state('artStaging', {
+	    }).state('artSignupInvite', {
+	        url: '/invite',
+	        component: 'artSignupInvite'
+	    }).state('artStaging', {
 	        url: '/staging',
 	        component: 'artStaging'
+	    }).state('artLevels', {
+	        url: '/levels/{artpackId}',
+	        component: 'artLevels',
+	        resolve: {
+	            // for filtering of levels to specific artpack
+	            artpackId: function artpackId(artAPIService, $stateParams) {
+	                return artAPIService.getArtPackArtwork($stateParams.artworkId);
+	            }
+	        }
 	    });
 	}).run(function ($http, $cookies) {
 	    // Add a header for CSRF token, so that POST does not fail to our API
@@ -40604,13 +40609,20 @@
 	
 	var _artStaging2 = _interopRequireDefault(_artStaging);
 	
+	var _artSignupInvite = __webpack_require__(17);
+	
+	var _artSignupInvite2 = _interopRequireDefault(_artSignupInvite);
+	
+	var _artLevels = __webpack_require__(20);
+	
+	var _artLevels2 = _interopRequireDefault(_artLevels);
+	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
 	var ArtModule = _angular2.default.module('art', [_angularResource2.default]).config(function ($resourceProvider) {
 	    // eslint-disable-next-line no-param-reassign
 	    $resourceProvider.defaults.stripTrailingSlashes = false;
-	}).factory('artAPIService', _artApi2.default).component('artPage', _artPage2.default).component('artStaging', _artStaging2.default);
-	
+	}).factory('artAPIService', _artApi2.default).component('artPage', _artPage2.default).component('artStaging', _artStaging2.default).component('artSignupInvite', _artSignupInvite2.default).component('artLevels', _artLevels2.default);
 	exports.default = ArtModule;
 
 /***/ },
@@ -41507,6 +41519,11 @@
 	                return response.data;
 	            });
 	        },
+	        getArtPackArtwork: function getArtPackArtwork(id) {
+	            return this.artpackartwork.get({ id: id }).$promise.then(function (data) {
+	                return data;
+	            });
+	        },
 	
 	
 	        artpack: $resource('/api/artpack/:id/', { id: '@id' }, {
@@ -41530,6 +41547,16 @@
 	            }
 	        }),
 	        userlevel: $resource('/api/userlevel/:id/', { id: '@id' }, {
+	            update: {
+	                method: 'PUT'
+	            }
+	        }),
+	        artpacklevel: $resource('/api/artpacklevel/:id/', { id: '@id' }, {
+	            update: {
+	                method: 'PUT'
+	            }
+	        }),
+	        artpackartwork: $resource('/api/artpackartwork/:id/', { id: '@id' }, {
 	            update: {
 	                method: 'PUT'
 	            }
@@ -41568,9 +41595,6 @@
 	
 	var artPageComponent = {
 	    template: _artPage2.default,
-	    // bindings: {
-	    // artwork: '<',
-	    // },
 	    controller: _artPage4.default,
 	    controllerAs: 'apeCtrl'
 	};
@@ -41581,19 +41605,19 @@
 /* 12 */
 /***/ function(module, exports) {
 
-	module.exports = "\n<!-- <div ng-show='!apeCtrl.lessonFinished'> -->\n<div>\n\n    <h2>Famous Western Paintings</h2>\n    <div class=\"painting\">\n        <img src=\"{{ apeCtrl.randomPainting.image }}\" alt=\"\">\n    </div>\n\n    <h3>Who painted this?</h3>\n\n    <div class='container'>\n        <div class='row'>\n                \n            <span \n                class='answer-list' \n                ng-repeat='artist in apeCtrl.answerList'\n            >\n            \n                <div class='col-md-3 col-xs-6'>\n                    <button\n                        class = \"answer-button btn-block\"\n                        ng-class=\"{\n                            'correct-answer' : artist.correct, \n                            'wrong-answer' : artist.incorrect\n                        }\"\n                        type='checkbox'\n                        name='artist.name'\n                        id='{{ artist.name }}'\n                        ng-value='artist.name'\n                        ng-click='apeCtrl.userChoice(artist)'\n                    >{{ artist.name }}\n                    </button>\n                </div>\n            \n            </span>\n\n        </div>\n    </div>\n\n    <h2 ng-show='apeCtrl.correctAnswer'>CORRECT!</h2>\n    <div ng-show='apeCtrl.incorrectAnswer'>That's not it. Try Again.</div>\n\n    <button \n        class='btn btn-success btn-lg' \n        ng-show='apeCtrl.correctAnswer'\n        ng-click='apeCtrl.nextQuestion()'\n    >\n        Next Painting\n    </button>\n                \n</div>\n\n\n<!-- <div class='sign-up-invite' ng-show='apeCtrl.lessonFinished'> -->\n<!-- \n<div class='sign-up-invite'>\n    <h1>You win!</h1>\n    <h3>\n        <a href='/accounts/register'>Sign up</a> \n        for more fun and to track your progress. (free)\n    </h3>\n    <h2>\n        <a ui-sref='artPage'>\n            Play again.\n        </a>    \n    </h2>\n</div>\n -->\n\n\n<hr style='margin-top: 200px;''>\nDebuggery...\n<pre>Art Set: {{ apeCtrl.artSet | json }}</pre>\n<pre>Painting Title: {{ apeCtrl.randomPainting.title }}</pre> \n<pre>Artist Name: {{ apeCtrl.randomPainting.artist.name }}</pre> \n<br>\n<pre>answerList: {{ apeCtrl.answerList | json }}</pre>\n<br>\n<pre>Artists: {{ apeCtrl.artists | json }}</pre>\n<br>\n<pre>Paintings: {{ apeCtrl.paintings | json }}</pre>"
+	module.exports = "<div>\n\n    <h2>Famous Western Paintings</h2>\n    <div class=\"painting\">\n        <img src=\"{{ apeCtrl.randomPainting.image }}\" alt=\"\">\n    </div>\n\n    <h3>Who painted this?</h3>\n\n    <div class='container'>\n        <div class='row'>\n                \n            <span \n                class='answer-list' \n                ng-repeat='artist in apeCtrl.answerList'\n            >\n            \n                <div class='col-md-3 col-xs-6'>\n                    <button\n                        class = \"answer-button btn-block\"\n                        ng-class=\"{\n                            'correct-answer' : artist.correct, \n                            'wrong-answer' : artist.incorrect\n                        }\"\n                        type='checkbox'\n                        name='artist.name'\n                        id='{{ artist.name }}'\n                        ng-value='artist.name'\n                        ng-click='apeCtrl.userChoice(artist)'\n                    >{{ artist.name }}\n                    </button>\n                </div>\n            \n            </span>\n\n        </div>\n    </div>\n\n    <h2 ng-show='apeCtrl.correctAnswer'>CORRECT!</h2>\n    <div ng-show='apeCtrl.incorrectAnswer'>That's not it. Try Again.</div>\n\n    <button \n        class='btn btn-success btn-lg' \n        ng-show='apeCtrl.correctAnswer'\n        ng-click='apeCtrl.nextQuestion()'\n    >\n        Next Painting\n    </button>\n                \n</div>\n\n<!-- \n<hr style='margin-top: 200px;''>\nDebuggery...\n<pre>Art Set: {{ apeCtrl.artSet | json }}</pre>\n<pre>Painting Title: {{ apeCtrl.randomPainting.title }}</pre> \n<pre>Artist Name: {{ apeCtrl.randomPainting.artist.name }}</pre> \n<br>\n<pre>answerList: {{ apeCtrl.answerList | json }}</pre>\n<br>\n<pre>Artists: {{ apeCtrl.artists | json }}</pre>\n<br>\n<pre>Paintings: {{ apeCtrl.paintings | json }}</pre> -->"
 
 /***/ },
 /* 13 */
 /***/ function(module, exports) {
 
-	"use strict";
+	'use strict';
 	
 	Object.defineProperty(exports, "__esModule", {
 	    value: true
 	});
 	
-	function ArtPageController(artAPIService) {
+	function ArtPageController(artAPIService, $state) {
 	    var ctrl = this;
 	
 	    // take user choice and determine right/wrong and take appropriate action
@@ -41702,6 +41726,7 @@
 	    function getArtPack() {
 	        return artAPIService.artpack.get().$promise.then(function (data) {
 	            ctrl.artPack = data.results;
+	
 	            // get id of artPack
 	            ctrl.packID = 1;
 	
@@ -41742,7 +41767,7 @@
 	
 	            // if you've gotten everything correct
 	        } else {
-	            ctrl.lessonFinished = true;
+	            $state.go('artSignupInvite');
 	        }
 	        // console.log('nextQuestion');
 	    };
@@ -41751,7 +41776,6 @@
 	        ctrl.correctAnswer = false;
 	        ctrl.incorrectAnswer = false;
 	        ctrl.correctFirstTime = true;
-	        ctrl.lessonFinished = false;
 	        getArt();
 	    }
 	
@@ -41792,7 +41816,7 @@
 /* 15 */
 /***/ function(module, exports) {
 
-	module.exports = "<div>\n    <h1>\n        Who Painted?\n    </h1>\n\n    <div class=\"row\">\n        <div ng-repeat='pack in apeCtrl.artPack'>\n            <div class=\"col-sm-3\">\n                name: {{ pack.title }}\n\n            </div>\n        </div>\n    </div>\n</div>"
+	module.exports = "<div>\n\n    <h2>Art Packs</h2>\n    \n    <div>\n        Select an art pack that you would like to learn.\n    </div>\n    \n    <hr>\n\n    <div class=\"row\">\n\n        <div ng-repeat='pack in stageCtrl.artPackArt' >\n            <a ui-sref='artLevels({ artpackId: pack.id})'>  \n              \n                <div class=\"col-sm-4\">\n                    <div class=\"staging-artpacks\">\n\n                        <div class='staging-titles'>\n                            {{ pack.title }}                    \n                        </div>\n\n                        <img ng-src=\"{{ pack.artwork_set[1].image }}\" >\n                        \n                    </div>\n                </div>\n            </a>\n        </div>\n\n    </div>\n\n</div>"
 
 /***/ },
 /* 16 */
@@ -41804,8 +41828,24 @@
 	    value: true
 	});
 	
-	function ArtStagingController() {
-	    // const ctrl = this;
+	function ArtStagingController(artAPIService) {
+	    var ctrl = this;
+	
+	    // identify art pack and get art from it
+	    function getArtPack() {
+	        return artAPIService.artpack.get().$promise.then(function (data) {
+	            ctrl.artPack = data.results;
+	        });
+	    }
+	
+	    function getArtPackArt() {
+	        return artAPIService.artpackartwork.get().$promise.then(function (data) {
+	            ctrl.artPackArt = data.results;
+	        });
+	    }
+	
+	    getArtPack();
+	    getArtPackArt();
 	}
 	
 	exports.default = ArtStagingController;
@@ -41820,11 +41860,119 @@
 	    value: true
 	});
 	
-	var _app = __webpack_require__(18);
+	var _artSignupInvite = __webpack_require__(18);
+	
+	var _artSignupInvite2 = _interopRequireDefault(_artSignupInvite);
+	
+	var _artSignupInvite3 = __webpack_require__(19);
+	
+	var _artSignupInvite4 = _interopRequireDefault(_artSignupInvite3);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	var artSignupInviteComponent = {
+	    template: _artSignupInvite2.default,
+	    controller: _artSignupInvite4.default,
+	    controllerAs: 'signupCtrl'
+	};
+	
+	exports.default = artSignupInviteComponent;
+
+/***/ },
+/* 18 */
+/***/ function(module, exports) {
+
+	module.exports = "\n<div class='sign-up-invite'>\n    <h1>You win!</h1>\n    <h3>\n        <a href='/accounts/register'>Sign up</a> \n        for more fun and to track your progress. (free)\n    </h3>\n    <h2>\n        <a ui-sref='artPage'>\n            Play again.\n        </a>    \n    </h2>\n</div>\n"
+
+/***/ },
+/* 19 */
+/***/ function(module, exports) {
+
+	"use strict";
+	
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	function ArtSignupInviteController() {
+	    var ctrl = this;
+	}
+	
+	exports.default = ArtSignupInviteController;
+
+/***/ },
+/* 20 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	
+	var _artLevels = __webpack_require__(21);
+	
+	var _artLevels2 = _interopRequireDefault(_artLevels);
+	
+	var _artLevels3 = __webpack_require__(22);
+	
+	var _artLevels4 = _interopRequireDefault(_artLevels3);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	var artLevelsComponent = {
+	    template: _artLevels2.default,
+	    controller: _artLevels4.default,
+	    controllerAs: 'levelsCtrl'
+	};
+	
+	exports.default = artLevelsComponent;
+
+/***/ },
+/* 21 */
+/***/ function(module, exports) {
+
+	module.exports = "<div>\n\n    <h2>Art Pack Levels</h2>\n\n    <div>\n        Select an art pack level.\n    </div>\n    <hr>\n    {{ levelCtrl.levels }}\n    <div class=\"row\">\n\n        <div ng-repeat='level in levelsCtrl.levels' >\n            <a ui-sref='artPage'>            \n                <div class=\"col-sm-3\">\n                    <div class=\"staging-artpacks\">\n\n                        <div>\n                            {{ level.title }}\n                        </div>\n                        \n                    </div>\n                </div>\n            <!-- </a> -->\n        <!-- </div> -->\n\n    </div>\n\n</div>"
+
+/***/ },
+/* 22 */
+/***/ function(module, exports) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	function ArtLevelsController(artAPIService, $stateParams) {
+	    var ctrl = this;
+	
+	    function getLevels() {
+	        var id = { id: $stateParams.artpackId };
+	        return artAPIService.artpacklevel.get(id).$promise.then(function (data) {
+	            ctrl.levels = data.level_set;
+	            console.log('data: ', data);
+	        });
+	    }
+	
+	    getLevels();
+	}
+	
+	exports.default = ArtLevelsController;
+
+/***/ },
+/* 23 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	
+	var _app = __webpack_require__(24);
 	
 	var _app2 = _interopRequireDefault(_app);
 	
-	var _app3 = __webpack_require__(19);
+	var _app3 = __webpack_require__(25);
 	
 	var _app4 = _interopRequireDefault(_app3);
 	
@@ -41839,13 +41987,13 @@
 	exports.default = appComponent;
 
 /***/ },
-/* 18 */
+/* 24 */
 /***/ function(module, exports) {
 
-	module.exports = "\n<header>\n    <nav class=\"navbar navbar-default navbar-fixed-top\">\n        \n        <div class=\"container menu\">\n           \n            <div class=\"navbar-header\">\n                \n                <button\n                    type='button'\n                    class='navbar-toggle collapsed'\n                    data-toggle='collapse'\n                    data-target='#navbar-header-collapse'\n                    aria-expanded='false'\n                >\n                    <span class='sr-only'>Toggle navigations.</span>\n                    <span class=\"icon-bar\"></span>\n                    <span class=\"icon-bar\"></span>\n                    <span class=\"icon-bar\"></span>\n                </button>\n                \n                <a ui-sref='index' class='navbar-brand'>\n                    <span>\n                        <i class=\"fa fa-paint-brush\"></i>\n                    </span>\n                    <span class='menu-title'>\n                        Who Painted? - angular header\n                    </span>\n                </a>\n\n            </div>\n        \n            <div id='navbar-header-collapse' class=\"collapse navbar-collapse\">\n\n                <div class='\n                    navbar-text \n                    navbar-left \n                    menu-username \n                    menu-links\n                '>\n                    <span ng-show='appCtrl.username'>\n                        Welcome {{ appCtrl.username }}                                            \n                    </span>\n                </div>\n\n                <ul class='nav navbar-nav navbar-right'>\n                        <li ng-show='appCtrl.username'>\n                            <a href='/accounts/logout'>Log Out</a>\n                        </li>\n                        <li ng-show='!appCtrl.username'>\n                            <a href='/accounts/login'>Log In</a>\n                        </li>\n                        <li ng-show='!appCtrl.username'>\n                            <a href='/accounts/register'>Sign Up</a>\n                        </li>\n                </ul>\n\n            </div>\n                \n\n\n        </div>\n\n    </nav>\n</header>\n\n\n<div class=\"container\">\n    client/app/app.html\n\n    <div ui-view></div>\n\n</div>\n\n\n"
+	module.exports = "\n<header>\n    <nav class=\"navbar navbar-default navbar-fixed-top\">\n        \n        <div class=\"container menu\">\n           \n            <div class=\"navbar-header\">\n                \n                <button\n                    type='button'\n                    class='navbar-toggle collapsed'\n                    data-toggle='collapse'\n                    data-target='#navbar-header-collapse'\n                    aria-expanded='false'\n                >\n                    <span class='sr-only'>Toggle navigations.</span>\n                    <span class=\"icon-bar\"></span>\n                    <span class=\"icon-bar\"></span>\n                    <span class=\"icon-bar\"></span>\n                </button>\n                \n                <a ui-sref='artStaging' class='navbar-brand'>\n                    <span>\n                        <i class=\"fa fa-paint-brush\"></i>\n                    </span>\n                    <span class='menu-title'>\n                        Who Painted?\n                    </span>\n                </a>\n\n            </div>\n        \n            <div id='navbar-header-collapse' class=\"collapse navbar-collapse\">\n\n                <div class='\n                    navbar-text \n                    navbar-left \n                    menu-username \n                    menu-links\n                '>\n                    <span ng-show='appCtrl.username'>\n                        Welcome {{ appCtrl.username }}                                            \n                    </span>\n                </div>\n\n                <ul class='nav navbar-nav navbar-right'>\n                        <li ng-show='appCtrl.username'>\n                            <a href='/accounts/logout'>Log Out</a>\n                        </li>\n                        <li ng-show='!appCtrl.username'>\n                            <a href='/accounts/login'>Log In</a>\n                        </li>\n                        <li ng-show='!appCtrl.username'>\n                            <a href='/accounts/register'>Sign Up</a>\n                        </li>\n                </ul>\n\n            </div>\n                \n\n\n        </div>\n\n    </nav>\n</header>\n\n\n<div class=\"container\">\n    <!-- You're looking at client/app/app.html. -->\n\n    <div ui-view></div>\n\n</div>\n\n\n"
 
 /***/ },
-/* 19 */
+/* 25 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -41860,10 +42008,11 @@
 	
 	    artAPIService.getMe().then(function (me) {
 	        ctrl.username = me.username;
+	        // if logged in load state...
 	        $state.go('artStaging');
 	        // console.log('app.controller.js $state: ', $state);
 	    },
-	    // if not logged in load new state
+	    // if not logged in load state...
 	    function () {
 	        $state.go('artPage');
 	    });

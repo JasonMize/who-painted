@@ -4,6 +4,11 @@ function artAPIService($resource, $http) {
         getMe() {
             return $http.get('/api/me/').then(response => response.data);
         },
+        getArtPackArtwork(id) {
+            return this.artpackartwork.get({ id }).$promise.then((data) => {
+                return data;
+            });
+        },
 
         artpack: $resource('/api/artpack/:id/',
             { id: '@id' },
@@ -44,6 +49,22 @@ function artAPIService($resource, $http) {
                     method: 'PUT',
                 },
             }
+        ),
+        artpacklevel: $resource('/api/artpacklevel/:id/',
+            { id: '@id' },
+            {
+                update: {
+                    method: 'PUT',
+                },
+            }
+        ),
+        artpackartwork: $resource('/api/artpackartwork/:id/',
+            { id: '@id' },
+            {
+                update: {
+                    method: 'PUT',
+                },
+            },
         ),
         userartpack: $resource('/api/userartpack/:id/',
             { id: '@id' },

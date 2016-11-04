@@ -37,6 +37,17 @@ class ArtworkSerializer(serializers.ModelSerializer):
         )
 
 
+class ArtPackArtworkSerializer(serializers.ModelSerializer):
+    artwork_set = ArtworkSerializer(many=True)
+    class Meta:
+        model = ArtPack
+        fields = (
+            'id',
+            'title',
+            'artwork_set',
+        )
+
+
 class LevelSerializer(serializers.ModelSerializer):
     artPack = ArtPackSerializer()
     class Meta:
@@ -45,6 +56,17 @@ class LevelSerializer(serializers.ModelSerializer):
             'id', 
             'title',
             'artPack',
+        )
+
+
+class ArtPackLevelSerializer(serializers.ModelSerializer):
+    level_set = LevelSerializer(many=True)
+    class Meta:
+        model = ArtPack
+        fields = (
+            'id',
+            'title',
+            'level_set',
         )
 
 

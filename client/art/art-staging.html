@@ -1,14 +1,32 @@
 <div>
-    <h1>
-        Who Painted?
-    </h1>
+
+    <h2>Art Packs</h2>
+    
+    <div>
+        Select an art pack that you would like to learn.
+    </div>
+    
+    <hr>
 
     <div class="row">
-        <div ng-repeat='pack in apeCtrl.artPack'>
-            <div class="col-sm-3">
-                name: {{ pack.title }}
 
-            </div>
+        <div ng-repeat='pack in stageCtrl.artPackArt' >
+            <a ui-sref='artLevels({ artpackId: pack.id})'>  
+              
+                <div class="col-sm-4">
+                    <div class="staging-artpacks">
+
+                        <div class='staging-titles'>
+                            {{ pack.title }}                    
+                        </div>
+
+                        <img ng-src="{{ pack.artwork_set[1].image }}" >
+                        
+                    </div>
+                </div>
+            </a>
         </div>
+
     </div>
+
 </div>

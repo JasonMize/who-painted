@@ -1,5 +1,5 @@
 
-function ArtPageController(artAPIService) {
+function ArtPageController(artAPIService, $state) {
     const ctrl = this;
 
 
@@ -115,6 +115,7 @@ function ArtPageController(artAPIService) {
     function getArtPack() {
         return artAPIService.artpack.get().$promise.then((data) => {
             ctrl.artPack = data.results;
+
             // get id of artPack
             ctrl.packID = 1;
 
@@ -157,7 +158,7 @@ function ArtPageController(artAPIService) {
 
         // if you've gotten everything correct
         } else {
-            ctrl.lessonFinished = true;
+            $state.go('artSignupInvite');
         }
         // console.log('nextQuestion');
     };
@@ -167,7 +168,6 @@ function ArtPageController(artAPIService) {
         ctrl.correctAnswer = false;
         ctrl.incorrectAnswer = false;
         ctrl.correctFirstTime = true;
-        ctrl.lessonFinished = false;
         getArt();
     }
 

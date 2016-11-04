@@ -4,6 +4,8 @@ import angularResource from 'angular-resource';
 import artAPIService from './art-api.service';
 import artPageComponent from './art-page.component';
 import artStagingComponent from './art-staging.component';
+import artSignupInviteComponent from './art-signup-invite.component';
+import artLevelsComponent from './art-levels.component';
 
 const ArtModule = angular.module('art', [
     angularResource,
@@ -14,6 +16,7 @@ const ArtModule = angular.module('art', [
     })
         .factory('artAPIService', artAPIService)
         .component('artPage', artPageComponent)
-        .component('artStaging', artStagingComponent);
-
+        .component('artStaging', artStagingComponent)
+        .component('artSignupInvite', artSignupInviteComponent)
+        .component('artLevels', artLevelsComponent);
 export default ArtModule;

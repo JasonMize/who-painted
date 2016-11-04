@@ -27,14 +27,26 @@ const AppModule = angular.module('app', [
                 component: 'artPage',
             })
 
-            // .state('artPackLevel', {
-            //     url: '/art',
-            //     component: 'artPackLevel',
-            // })
+            .state('artSignupInvite', {
+                url: '/invite',
+                component: 'artSignupInvite',
+            })
 
             .state('artStaging', {
                 url: '/staging',
                 component: 'artStaging',
+            })
+
+            .state('artLevels', {
+                url: '/levels/{artpackId}',
+                component: 'artLevels',
+                resolve: {
+                    // for filtering of levels to specific artpack
+                    artpackId(artAPIService, $stateParams) {
+                        return artAPIService
+                            .getArtPackArtwork($stateParams.artworkId);
+                    },
+                },
             });
     })
 

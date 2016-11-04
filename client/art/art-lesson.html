@@ -1,3 +1,50 @@
 <div>
-    <h2>Art Lesson</h2>
+
+    <h2>Famous Western Paintings</h2>
+    <div class="painting">
+        <img src="{{ lessonCtrl.randomPainting.image }}" alt="">
+    </div>
+
+    <h3>Who painted this?</h3>
+
+    <div class='container'>
+        <div class='row'>
+                
+            <span 
+                class='answer-list' 
+                ng-repeat='artist in lessonCtrl.answerList'
+            >
+            
+                <div class='col-md-3 col-xs-6'>
+                    <button
+                        class = "answer-button btn-block"
+                        ng-class="{
+                            'correct-answer' : artist.correct, 
+                            'wrong-answer' : artist.incorrect
+                        }"
+                        type='checkbox'
+                        name='artist.name'
+                        id='{{ artist.name }}'
+                        ng-value='artist.name'
+                        ng-click='lessonCtrl.userChoice(artist)'
+                    >{{ artist.name }}
+                    </button>
+                </div>
+            
+            </span>
+
+        </div>
+    </div>
+
+    <h2 ng-show='lessonCtrl.correctAnswer'>CORRECT!</h2>
+    <div ng-show='lessonCtrl.incorrectAnswer'>That's not it. Try Again.</div>
+
+    <button 
+        class='btn btn-success btn-lg' 
+        ng-show='lessonCtrl.correctAnswer'
+        ng-click='lessonCtrl.nextQuestion()'
+    >
+        Next Painting
+    </button>
+                
 </div>

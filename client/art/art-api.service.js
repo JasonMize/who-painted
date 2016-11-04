@@ -9,6 +9,11 @@ function artAPIService($resource, $http) {
                 return data;
             });
         },
+        getArtPackLevel(id) {
+            return this.level.get({ id }).$promise.then((data) => {
+                return data;
+            });
+        },
 
         artpack: $resource('/api/artpack/:id/',
             { id: '@id' },

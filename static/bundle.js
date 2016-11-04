@@ -74,7 +74,7 @@
 	
 	var _art2 = _interopRequireDefault(_art);
 	
-	var _app = __webpack_require__(23);
+	var _app = __webpack_require__(26);
 	
 	var _app2 = _interopRequireDefault(_app);
 	
@@ -85,7 +85,7 @@
 	
 	    $stateProvider.state('index', {
 	        url: '/',
-	        component: 'artPage'
+	        component: 'artStaging'
 	    }).state('artPage', {
 	        url: '/art',
 	        component: 'artPage'
@@ -102,6 +102,14 @@
 	            // for filtering of levels to specific artpack
 	            artpackId: function artpackId(artAPIService, $stateParams) {
 	                return artAPIService.getArtPackArtwork($stateParams.artworkId);
+	            }
+	        }
+	    }).state('artLesson', {
+	        url: '/lesson/{levelId}',
+	        component: 'artLesson',
+	        resolve: {
+	            levelId: function levelId(artAPIService, $stateParams) {
+	                return artAPIService.getArtPackLevel($stateParams.levelId);
 	            }
 	        }
 	    });
@@ -40617,12 +40625,16 @@
 	
 	var _artLevels2 = _interopRequireDefault(_artLevels);
 	
+	var _artLesson = __webpack_require__(23);
+	
+	var _artLesson2 = _interopRequireDefault(_artLesson);
+	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
 	var ArtModule = _angular2.default.module('art', [_angularResource2.default]).config(function ($resourceProvider) {
 	    // eslint-disable-next-line no-param-reassign
 	    $resourceProvider.defaults.stripTrailingSlashes = false;
-	}).factory('artAPIService', _artApi2.default).component('artPage', _artPage2.default).component('artStaging', _artStaging2.default).component('artSignupInvite', _artSignupInvite2.default).component('artLevels', _artLevels2.default);
+	}).factory('artAPIService', _artApi2.default).component('artPage', _artPage2.default).component('artStaging', _artStaging2.default).component('artSignupInvite', _artSignupInvite2.default).component('artLevels', _artLevels2.default).component('artLesson', _artLesson2.default);
 	exports.default = ArtModule;
 
 /***/ },
@@ -41524,6 +41536,11 @@
 	                return data;
 	            });
 	        },
+	        getArtPackLevel: function getArtPackLevel(id) {
+	            return this.level.get({ id: id }).$promise.then(function (data) {
+	                return data;
+	            });
+	        },
 	
 	
 	        artpack: $resource('/api/artpack/:id/', { id: '@id' }, {
@@ -41822,14 +41839,24 @@
 /* 16 */
 /***/ function(module, exports) {
 
-	"use strict";
+	'use strict';
 	
 	Object.defineProperty(exports, "__esModule", {
 	    value: true
 	});
 	
-	function ArtStagingController(artAPIService) {
+	function ArtStagingController(artAPIService, $state) {
 	    var ctrl = this;
+	
+	    // if not logged in keep on artPage
+	    artAPIService.getMe().then(function (me) {
+	        ctrl.username = me.username;
+	        // if logged in load state...
+	    },
+	    // if not logged in load state...
+	    function () {
+	        $state.go('artPage');
+	    });
 	
 	    // identify art pack and get art from it
 	    function getArtPack() {
@@ -41931,7 +41958,7 @@
 /* 21 */
 /***/ function(module, exports) {
 
-	module.exports = "<div>\n\n    <h2>Art Pack Levels</h2>\n\n    <div>\n        Select an art pack level.\n    </div>\n    <hr>\n    {{ levelCtrl.levels }}\n    <div class=\"row\">\n\n        <div ng-repeat='level in levelsCtrl.levels' >\n            <a ui-sref='artPage'>            \n                <div class=\"col-sm-3\">\n                    <div class=\"staging-artpacks\">\n\n                        <div>\n                            {{ level.title }}\n                        </div>\n                        \n                    </div>\n                </div>\n            <!-- </a> -->\n        <!-- </div> -->\n\n    </div>\n\n</div>"
+	module.exports = "<div>\n\n    <h2>Art Pack Levels</h2>\n\n    <div>\n        Select an art pack level.\n    </div>\n\n    <hr>\n\n    <div class=\"row\">\n\n        <div ng-repeat='level in levelsCtrl.levels' >\n            <a ui-sref='artLesson ({ levelId: level.id })'>            \n                <div class=\"col-sm-3\">\n                    <div class=\"staging-artpacks\">\n\n                        <div>\n                            {{ level.title }}\n                        </div>\n                        \n                    </div>\n                </div>\n            <!-- </a> -->\n        <!-- </div> -->\n\n    </div>\n\n</div>"
 
 /***/ },
 /* 22 */
@@ -41942,14 +41969,24 @@
 	Object.defineProperty(exports, "__esModule", {
 	    value: true
 	});
-	function ArtLevelsController(artAPIService, $stateParams) {
+	function ArtLevelsController(artAPIService, $stateParams, $state) {
 	    var ctrl = this;
+	
+	    // if not logged in keep on artPage
+	    artAPIService.getMe().then(function (me) {
+	        ctrl.username = me.username;
+	        // if logged in load state...
+	    },
+	    // if not logged in load state...
+	    function () {
+	        $state.go('artPage');
+	    });
 	
 	    function getLevels() {
 	        var id = { id: $stateParams.artpackId };
 	        return artAPIService.artpacklevel.get(id).$promise.then(function (data) {
 	            ctrl.levels = data.level_set;
-	            console.log('data: ', data);
+	            // console.log('data: ', data);
 	        });
 	    }
 	
@@ -41968,11 +42005,80 @@
 	    value: true
 	});
 	
-	var _app = __webpack_require__(24);
+	var _artLesson = __webpack_require__(24);
+	
+	var _artLesson2 = _interopRequireDefault(_artLesson);
+	
+	var _artLesson3 = __webpack_require__(25);
+	
+	var _artLesson4 = _interopRequireDefault(_artLesson3);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	var artLessonComponent = {
+	    template: _artLesson2.default,
+	    controller: _artLesson4.default,
+	    controllerAs: 'lessonCtrl'
+	};
+	
+	exports.default = artLessonComponent;
+
+/***/ },
+/* 24 */
+/***/ function(module, exports) {
+
+	module.exports = "<div>\n    <h2>Art Lesson</h2>\n</div>"
+
+/***/ },
+/* 25 */
+/***/ function(module, exports) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	function ArtLessonController(artAPIService, $stateParams, $state) {
+	    var ctrl = this;
+	
+	    // if not logged in keep on artPage
+	    artAPIService.getMe().then(function (me) {
+	        ctrl.username = me.username;
+	        // if logged in load state...
+	    },
+	    // if not logged in load state...
+	    function () {
+	        $state.go('artPage');
+	    });
+	
+	    function getLesson() {
+	        var id = { id: $stateParams.lessonId };
+	        return artAPIService.artpacklevel.get(id).$promise.then(function (data) {
+	            ctrl.lesson = data.level_set;
+	            console.log('lesson data: ', data);
+	        });
+	    }
+	
+	    getLesson();
+	}
+	
+	exports.default = ArtLessonController;
+
+/***/ },
+/* 26 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	
+	var _app = __webpack_require__(27);
 	
 	var _app2 = _interopRequireDefault(_app);
 	
-	var _app3 = __webpack_require__(25);
+	var _app3 = __webpack_require__(28);
 	
 	var _app4 = _interopRequireDefault(_app3);
 	
@@ -41987,13 +42093,13 @@
 	exports.default = appComponent;
 
 /***/ },
-/* 24 */
+/* 27 */
 /***/ function(module, exports) {
 
 	module.exports = "\n<header>\n    <nav class=\"navbar navbar-default navbar-fixed-top\">\n        \n        <div class=\"container menu\">\n           \n            <div class=\"navbar-header\">\n                \n                <button\n                    type='button'\n                    class='navbar-toggle collapsed'\n                    data-toggle='collapse'\n                    data-target='#navbar-header-collapse'\n                    aria-expanded='false'\n                >\n                    <span class='sr-only'>Toggle navigations.</span>\n                    <span class=\"icon-bar\"></span>\n                    <span class=\"icon-bar\"></span>\n                    <span class=\"icon-bar\"></span>\n                </button>\n                \n                <a ui-sref='artStaging' class='navbar-brand'>\n                    <span>\n                        <i class=\"fa fa-paint-brush\"></i>\n                    </span>\n                    <span class='menu-title'>\n                        Who Painted?\n                    </span>\n                </a>\n\n            </div>\n        \n            <div id='navbar-header-collapse' class=\"collapse navbar-collapse\">\n\n                <div class='\n                    navbar-text \n                    navbar-left \n                    menu-username \n                    menu-links\n                '>\n                    <span ng-show='appCtrl.username'>\n                        Welcome {{ appCtrl.username }}                                            \n                    </span>\n                </div>\n\n                <ul class='nav navbar-nav navbar-right'>\n                        <li ng-show='appCtrl.username'>\n                            <a href='/accounts/logout'>Log Out</a>\n                        </li>\n                        <li ng-show='!appCtrl.username'>\n                            <a href='/accounts/login'>Log In</a>\n                        </li>\n                        <li ng-show='!appCtrl.username'>\n                            <a href='/accounts/register'>Sign Up</a>\n                        </li>\n                </ul>\n\n            </div>\n                \n\n\n        </div>\n\n    </nav>\n</header>\n\n\n<div class=\"container\">\n    <!-- You're looking at client/app/app.html. -->\n\n    <div ui-view></div>\n\n</div>\n\n\n"
 
 /***/ },
-/* 25 */
+/* 28 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -42006,11 +42112,10 @@
 	function AppController(artAPIService, $state) {
 	    var ctrl = this;
 	
+	    // if not logged in keep on artPage
 	    artAPIService.getMe().then(function (me) {
 	        ctrl.username = me.username;
 	        // if logged in load state...
-	        $state.go('artStaging');
-	        // console.log('app.controller.js $state: ', $state);
 	    },
 	    // if not logged in load state...
 	    function () {

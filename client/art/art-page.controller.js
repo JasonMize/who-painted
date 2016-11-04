@@ -2,7 +2,6 @@
 function ArtPageController(artAPIService, $state) {
     const ctrl = this;
 
-
     // take user choice and determine right/wrong and take appropriate action
     ctrl.userChoice = function userChoice(selection) {
         // if selection is correct...

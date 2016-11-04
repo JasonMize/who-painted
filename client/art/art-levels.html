@@ -5,12 +5,13 @@
     <div>
         Select an art pack level.
     </div>
+
     <hr>
-    {{ levelCtrl.levels }}
+
     <div class="row">
 
         <div ng-repeat='level in levelsCtrl.levels' >
-            <a ui-sref='artPage'>            
+            <a ui-sref='artLesson ({ levelId: level.id })'>            
                 <div class="col-sm-3">
                     <div class="staging-artpacks">
 

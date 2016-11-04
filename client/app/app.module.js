@@ -19,7 +19,7 @@ const AppModule = angular.module('app', [
         $stateProvider
             .state('index', {
                 url: '/',
-                component: 'artPage',
+                component: 'artStaging',
             })
 
             .state('artPage', {
@@ -45,6 +45,17 @@ const AppModule = angular.module('app', [
                     artpackId(artAPIService, $stateParams) {
                         return artAPIService
                             .getArtPackArtwork($stateParams.artworkId);
+                    },
+                },
+            })
+
+            .state('artLesson', {
+                url: '/lesson/{levelId}',
+                component: 'artLesson',
+                resolve: {
+                    levelId(artAPIService, $stateParams) {
+                        return artAPIService
+                            .getArtPackLevel($stateParams.levelId);
                     },
                 },
             });

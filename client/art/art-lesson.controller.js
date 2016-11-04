@@ -1,4 +1,4 @@
-function ArtLevelsController(artAPIService, $stateParams, $state) {
+function ArtLessonController(artAPIService, $stateParams, $state) {
     const ctrl = this;
 
     // if not logged in keep on artPage
@@ -12,15 +12,15 @@ function ArtLevelsController(artAPIService, $stateParams, $state) {
         });
 
 
-    function getLevels() {
-        const id = { id: $stateParams.artpackId };
+    function getLesson() {
+        const id = { id: $stateParams.lessonId };
         return artAPIService.artpacklevel.get(id).$promise.then((data) => {
-            ctrl.levels = data.level_set;
-            // console.log('data: ', data);
+            ctrl.lesson = data.level_set;
+            console.log('lesson data: ', data);
         });
     }
 
-    getLevels();
+    getLesson();
 }
 
-export default ArtLevelsController;
+export default ArtLessonController;

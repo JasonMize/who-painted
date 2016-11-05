@@ -16,6 +16,9 @@
             >
             
                 <div class='col-md-3 col-xs-6'>
+
+                    <!-- Modal Call -->
+                    <!-- <a href="#" data-toggle='modal' data-target='#correctAnswer'></a> -->
                     <button
                         class = "answer-button btn-block"
                         ng-class="{
@@ -27,16 +30,55 @@
                         id='{{ artist.name }}'
                         ng-value='artist.name'
                         ng-click='lessonCtrl.userChoice(artist)'
-                    >{{ artist.name }}
+                        data-target='#modalCorrectAnswer'
+                        data-toggle='modal' 
+                    >
+                        {{ artist.name }}
                     </button>
-                </div>
-            
-            </span>
 
-        </div>
-    </div>
 
-    <h2 ng-show='lessonCtrl.correctAnswer'>CORRECT!</h2>
+                    <!-- Modal -->
+                    <div 
+                        class="modal fade" 
+                        id="{{ lessonCtrl.modalID }}" 
+                        tabindex="-1" 
+                        role="dialog" 
+                        aria-labelledby="{{ lessonCtrl.modalID }}"
+                    >
+                        <div class="modal-dialog modal-lg" role="document">
+                            <div class="modal-content">
+                                
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                    
+                                    <h4 class="modal-title" id="{{ lessonCtrl.modalID }}">{{ lessonCtrl.randomPainting.title }}</h4>
+                                </div>
+                          
+                                <div class="modal-body">
+
+                                    You're in the modal body.
+
+                     
+                                <!-- Modal resumes -->
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- end Modal -->
+
+                </div><!-- end col -->
+
+            </span><!-- end ng-repeat -->
+
+        </div><!-- end row -->
+    </div><!-- end container -->
+
+
+
+<!--     <h2 ng-show='lessonCtrl.correctAnswer'>CORRECT!</h2>
     <div ng-show='lessonCtrl.incorrectAnswer'>That's not it. Try Again.</div>
 
     <button 
@@ -46,5 +88,7 @@
     >
         Next Painting
     </button>
-                
+ -->                
+
+
 </div>

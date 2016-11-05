@@ -15,6 +15,7 @@ function ArtPageController(artAPIService, $state) {
             selection.correct = true;
             ctrl.correctAnswer = true;
             ctrl.incorrectAnswer = false;
+            ctrl.modalID = 'modalCorrectAnswer';
 
         // if selection is wrong...
         } else {
@@ -22,6 +23,7 @@ function ArtPageController(artAPIService, $state) {
             selection.incorrect = true;
             ctrl.incorrectAnswer = true;
             ctrl.correctFirstTime = false;
+            ctrl.modalID = 'null';
         }
 
         // console.log('userChoice');
@@ -152,6 +154,8 @@ function ArtPageController(artAPIService, $state) {
             ctrl.correctAnswer = false;
             ctrl.incorrectAnswer = false;
             ctrl.correctFirstTime = true;
+            ctrl.modalID = 'null';
+
             randomPic();
             wrongAnswers();
 
@@ -167,6 +171,7 @@ function ArtPageController(artAPIService, $state) {
         ctrl.correctAnswer = false;
         ctrl.incorrectAnswer = false;
         ctrl.correctFirstTime = true;
+        ctrl.modalID = 'null';
         getArt();
     }
 
@@ -174,4 +179,3 @@ function ArtPageController(artAPIService, $state) {
 }
 
 export default ArtPageController;
-

@@ -14,6 +14,7 @@ class ArtworkAdmin(admin.ModelAdmin):
         'artist',
         'image',
         'artPack',
+        'description'
     )
 
 

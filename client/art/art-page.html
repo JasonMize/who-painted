@@ -16,6 +16,8 @@
             >
             
                 <div class='col-md-3 col-xs-6'>
+                    
+                    <!-- Modal Call -->
                     <button
                         class = "answer-button btn-block"
                         ng-class="{
@@ -27,25 +29,84 @@
                         id='{{ artist.name }}'
                         ng-value='artist.name'
                         ng-click='apeCtrl.userChoice(artist)'
-                    >{{ artist.name }}
+                        data-target='#modalCorrectAnswer'
+                        data-toggle='modal'
+                    >
+                        {{ artist.name }}
                     </button>
-                </div>
+                    
+                    <!-- Modal -->
+                    <div
+                        class='modal fade'
+                        id='{{ apeCtrl.modalID }}'
+                        tabindex='-1'
+                        role='dialog'
+                        aria-labelledby='{{ apeCtrl.modalID }}'
+                        data-backdrop=''
+                    >
+                        <div class="modal-dialog modal-lg" role="document">
+                            <div class="modal-content">
+                                
+                                <div class="modal-header">
+                                    
+                                    <button 
+                                        type="button" 
+                                        class="close" 
+                                        data-dismiss="modal" 
+                                        aria-label="Next Painting"
+                                        ng-click='apeCtrl.nextQuestion()'
+                                    >
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                    
+                                    <h4 class="modal-title" id="{{ apeCtrl.modalID }}">{{ apeCtrl.randomPainting.title }}</h4>
+                                    <div>by</div>
+                                    <h4 class="modal-title" id="{{ apeCtrl.modalID }}">{{ apeCtrl.randomPainting.artist.name }}</h4>
+                                </div>
+
+
+                                <div class="modal-body">
+                                   <div class="row"> 
+                                        <div class="col-md-6">
+                                            <div class="modal-painting">
+                                                <img ng-src="{{ apeCtrl.randomPainting.image }}" alt="">
+                                            </div>                                        
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class='modal-description'>
+                                                {{ apeCtrl.randomPainting.description }}
+                                            </div>                                        
+                                        </div>
+                                    </div>                                
+                                </div>
+
+
+                                <div class="modal-footer">
+                                    
+                                    <button 
+                                        type="button" 
+                                        class="btn btn-default close" 
+                                        data-dismiss="modal"
+                                        ng-click='apeCtrl.nextQuestion()'
+                                    >
+                                        Next Painting
+                                    </button>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- end Modal -->
+
+
+
+
+                </div><!-- end col -->
             
-            </span>
+            </span><!-- end ng-repeat -->
 
-        </div>
-    </div>
-
-    <h2 ng-show='apeCtrl.correctAnswer'>CORRECT!</h2>
-    <div ng-show='apeCtrl.incorrectAnswer'>That's not it. Try Again.</div>
-
-    <button 
-        class='btn btn-success btn-lg' 
-        ng-show='apeCtrl.correctAnswer'
-        ng-click='apeCtrl.nextQuestion()'
-    >
-        Next Painting
-    </button>
+        </div><!-- end row -->
+    </div><!-- end container -->
                 
 </div>
 

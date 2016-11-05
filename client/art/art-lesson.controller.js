@@ -1,6 +1,6 @@
+
 function ArtLessonController(artAPIService, $stateParams, $state) {
     const ctrl = this;
-
 
     // if not logged in keep on artPage
     artAPIService.getMe().then((me) => {
@@ -45,7 +45,6 @@ function ArtLessonController(artAPIService, $stateParams, $state) {
             ctrl.correctFirstTime = false;
             ctrl.modalID = 'null';
         }
-        console.log('correctAnswer: ', ctrl.correctAnswer);
         // console.log('userChoice');
     };
 
@@ -174,6 +173,8 @@ function ArtLessonController(artAPIService, $stateParams, $state) {
             ctrl.correctAnswer = false;
             ctrl.incorrectAnswer = false;
             ctrl.correctFirstTime = true;
+            ctrl.modalID = 'null';
+
             randomPic();
             wrongAnswers();
 
@@ -189,6 +190,7 @@ function ArtLessonController(artAPIService, $stateParams, $state) {
         ctrl.correctAnswer = false;
         ctrl.incorrectAnswer = false;
         ctrl.correctFirstTime = true;
+        ctrl.modalID = 'null';
         getArt();
     }
 

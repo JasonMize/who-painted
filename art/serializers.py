@@ -34,6 +34,7 @@ class ArtworkSerializer(serializers.ModelSerializer):
             'title',
             'image',
             'artPack',
+            'description',
         )
 
 

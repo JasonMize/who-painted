@@ -16,6 +16,8 @@
             >
             
                 <div class='col-md-3 col-xs-6'>
+
+                    <!-- Modal Call -->
                     <button
                         class = "answer-button btn-block"
                         ng-class="{
@@ -27,24 +29,81 @@
                         id='{{ artist.name }}'
                         ng-value='artist.name'
                         ng-click='lessonCtrl.userChoice(artist)'
-                    >{{ artist.name }}
+                        data-target='#modalCorrectAnswer'
+                        data-toggle='modal' 
+                    >
+                        {{ artist.name }}
                     </button>
-                </div>
-            
-            </span>
 
-        </div>
-    </div>
 
-    <h2 ng-show='lessonCtrl.correctAnswer'>CORRECT!</h2>
-    <div ng-show='lessonCtrl.incorrectAnswer'>That's not it. Try Again.</div>
+                    <!-- Modal -->
+                    <div 
+                        class="modal fade" 
+                        id="{{ lessonCtrl.modalID }}" 
+                        tabindex="-1" 
+                        role="dialog" 
+                        aria-labelledby="{{ lessonCtrl.modalID }}"
+                        data-backdrop=""
+                    >
+                        <div class="modal-dialog modal-lg" role="document">
+                            <div class="modal-content">
+                                
+                                <div class="modal-header">
+                                    
+                                    <button 
+                                        type="button" 
+                                        class="close" 
+                                        data-dismiss="modal" 
+                                        aria-label="Next Painting"
+                                        ng-click='lessonCtrl.nextQuestion()'
+                                    >
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                    
+                                    <h4 class="modal-title" id="{{ lessonCtrl.modalID }}">{{ lessonCtrl.randomPainting.title }}</h4>
+                                    <div>by</div>
+                                    <h4 class="modal-title" id="{{ lessonCtrl.modalID }}">{{ lessonCtrl.randomPainting.artist.name }}</h4>
+                                </div>
 
-    <button 
-        class='btn btn-success btn-lg' 
-        ng-show='lessonCtrl.correctAnswer'
-        ng-click='lessonCtrl.nextQuestion()'
-    >
-        Next Painting
-    </button>
-                
+
+                                <div class="modal-body">
+                                   <div class="row"> 
+                                        <div class="col-md-6">
+                                            <div class="modal-painting">
+                                                <img ng-src="{{ lessonCtrl.randomPainting.image }}" alt="">
+                                            </div>                                        
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class='modal-description'>
+                                                {{ lessonCtrl.randomPainting.description }}
+                                            </div>                                        
+                                        </div>
+                                    </div>                                
+                                </div>
+
+
+                                <div class="modal-footer">
+                                    
+                                    <button 
+                                        type="button" 
+                                        class="btn btn-default close" 
+                                        data-dismiss="modal"
+                                        ng-click='lessonCtrl.nextQuestion()'
+                                    >
+                                        Next Painting
+                                    </button>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- end Modal -->
+
+                </div><!-- end col -->
+
+            </span><!-- end ng-repeat -->
+
+        </div><!-- end row -->
+    </div><!-- end container -->
+
 </div>

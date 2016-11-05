@@ -41622,7 +41622,7 @@
 /* 12 */
 /***/ function(module, exports) {
 
-	module.exports = "<div>\n\n    <h2>Famous Western Paintings</h2>\n    <div class=\"painting\">\n        <img src=\"{{ apeCtrl.randomPainting.image }}\" alt=\"\">\n    </div>\n\n    <h3>Who painted this?</h3>\n\n    <div class='container'>\n        <div class='row'>\n                \n            <span \n                class='answer-list' \n                ng-repeat='artist in apeCtrl.answerList'\n            >\n            \n                <div class='col-md-3 col-xs-6'>\n                    <button\n                        class = \"answer-button btn-block\"\n                        ng-class=\"{\n                            'correct-answer' : artist.correct, \n                            'wrong-answer' : artist.incorrect\n                        }\"\n                        type='checkbox'\n                        name='artist.name'\n                        id='{{ artist.name }}'\n                        ng-value='artist.name'\n                        ng-click='apeCtrl.userChoice(artist)'\n                    >{{ artist.name }}\n                    </button>\n                </div>\n            \n            </span>\n\n        </div>\n    </div>\n\n    <h2 ng-show='apeCtrl.correctAnswer'>CORRECT!</h2>\n    <div ng-show='apeCtrl.incorrectAnswer'>That's not it. Try Again.</div>\n\n    <button \n        class='btn btn-success btn-lg' \n        ng-show='apeCtrl.correctAnswer'\n        ng-click='apeCtrl.nextQuestion()'\n    >\n        Next Painting\n    </button>\n                \n</div>\n\n<!-- \n<hr style='margin-top: 200px;''>\nDebuggery...\n<pre>Art Set: {{ apeCtrl.artSet | json }}</pre>\n<pre>Painting Title: {{ apeCtrl.randomPainting.title }}</pre> \n<pre>Artist Name: {{ apeCtrl.randomPainting.artist.name }}</pre> \n<br>\n<pre>answerList: {{ apeCtrl.answerList | json }}</pre>\n<br>\n<pre>Artists: {{ apeCtrl.artists | json }}</pre>\n<br>\n<pre>Paintings: {{ apeCtrl.paintings | json }}</pre> -->"
+	module.exports = "<div>\n\n    <h2>Famous Western Paintings</h2>\n    <div class=\"painting\">\n        <img src=\"{{ apeCtrl.randomPainting.image }}\" alt=\"\">\n    </div>\n\n    <h3>Who painted this?</h3>\n\n    <div class='container'>\n        <div class='row'>\n                \n            <span \n                class='answer-list' \n                ng-repeat='artist in apeCtrl.answerList'\n            >\n            \n                <div class='col-md-3 col-xs-6'>\n                    \n                    <!-- Modal Call -->\n                    <button\n                        class = \"answer-button btn-block\"\n                        ng-class=\"{\n                            'correct-answer' : artist.correct, \n                            'wrong-answer' : artist.incorrect\n                        }\"\n                        type='checkbox'\n                        name='artist.name'\n                        id='{{ artist.name }}'\n                        ng-value='artist.name'\n                        ng-click='apeCtrl.userChoice(artist)'\n                        data-target='#modalCorrectAnswer'\n                        data-toggle='modal'\n                    >\n                        {{ artist.name }}\n                    </button>\n                    \n                    <!-- Modal -->\n                    <div\n                        class='modal fade'\n                        id='{{ apeCtrl.modalID }}'\n                        tabindex='-1'\n                        role='dialog'\n                        aria-labelledby='{{ apeCtrl.modalID }}'\n                        data-backdrop=''\n                    >\n                        <div class=\"modal-dialog modal-lg\" role=\"document\">\n                            <div class=\"modal-content\">\n                                \n                                <div class=\"modal-header\">\n                                    \n                                    <button \n                                        type=\"button\" \n                                        class=\"close\" \n                                        data-dismiss=\"modal\" \n                                        aria-label=\"Next Painting\"\n                                        ng-click='apeCtrl.nextQuestion()'\n                                    >\n                                        <span aria-hidden=\"true\">&times;</span>\n                                    </button>\n                                    \n                                    <h4 class=\"modal-title\" id=\"{{ apeCtrl.modalID }}\">{{ apeCtrl.randomPainting.title }}</h4>\n                                    <div>by</div>\n                                    <h4 class=\"modal-title\" id=\"{{ apeCtrl.modalID }}\">{{ apeCtrl.randomPainting.artist.name }}</h4>\n                                </div>\n\n\n                                <div class=\"modal-body\">\n                                   <div class=\"row\"> \n                                        <div class=\"col-md-6\">\n                                            <div class=\"modal-painting\">\n                                                <img ng-src=\"{{ apeCtrl.randomPainting.image }}\" alt=\"\">\n                                            </div>                                        \n                                        </div>\n                                        <div class=\"col-md-6\">\n                                            <div class='modal-description'>\n                                                {{ apeCtrl.randomPainting.description }}\n                                            </div>                                        \n                                        </div>\n                                    </div>                                \n                                </div>\n\n\n                                <div class=\"modal-footer\">\n                                    \n                                    <button \n                                        type=\"button\" \n                                        class=\"btn btn-default close\" \n                                        data-dismiss=\"modal\"\n                                        ng-click='apeCtrl.nextQuestion()'\n                                    >\n                                        Next Painting\n                                    </button>\n\n                                </div>\n                            </div>\n                        </div>\n                    </div>\n                    <!-- end Modal -->\n\n\n\n\n                </div><!-- end col -->\n            \n            </span><!-- end ng-repeat -->\n\n        </div><!-- end row -->\n    </div><!-- end container -->\n                \n</div>\n\n<!-- \n<hr style='margin-top: 200px;''>\nDebuggery...\n<pre>Art Set: {{ apeCtrl.artSet | json }}</pre>\n<pre>Painting Title: {{ apeCtrl.randomPainting.title }}</pre> \n<pre>Artist Name: {{ apeCtrl.randomPainting.artist.name }}</pre> \n<br>\n<pre>answerList: {{ apeCtrl.answerList | json }}</pre>\n<br>\n<pre>Artists: {{ apeCtrl.artists | json }}</pre>\n<br>\n<pre>Paintings: {{ apeCtrl.paintings | json }}</pre> -->"
 
 /***/ },
 /* 13 */
@@ -41650,6 +41650,7 @@
 	            selection.correct = true;
 	            ctrl.correctAnswer = true;
 	            ctrl.incorrectAnswer = false;
+	            ctrl.modalID = 'modalCorrectAnswer';
 	
 	            // if selection is wrong...
 	        } else {
@@ -41657,6 +41658,7 @@
 	            selection.incorrect = true;
 	            ctrl.incorrectAnswer = true;
 	            ctrl.correctFirstTime = false;
+	            ctrl.modalID = 'null';
 	        }
 	
 	        // console.log('userChoice');
@@ -41779,6 +41781,8 @@
 	            ctrl.correctAnswer = false;
 	            ctrl.incorrectAnswer = false;
 	            ctrl.correctFirstTime = true;
+	            ctrl.modalID = 'null';
+	
 	            randomPic();
 	            wrongAnswers();
 	
@@ -41793,6 +41797,7 @@
 	        ctrl.correctAnswer = false;
 	        ctrl.incorrectAnswer = false;
 	        ctrl.correctFirstTime = true;
+	        ctrl.modalID = 'null';
 	        getArt();
 	    }
 	
@@ -42026,7 +42031,7 @@
 /* 24 */
 /***/ function(module, exports) {
 
-	module.exports = "<div>\n\n    <h2>Famous Western Paintings</h2>\n    <div class=\"painting\">\n        <img src=\"{{ lessonCtrl.randomPainting.image }}\" alt=\"\">\n    </div>\n\n    <h3>Who painted this?</h3>\n\n    <div class='container'>\n        <div class='row'>\n                \n            <span \n                class='answer-list' \n                ng-repeat='artist in lessonCtrl.answerList'\n            >\n            \n                <div class='col-md-3 col-xs-6'>\n                    <button\n                        class = \"answer-button btn-block\"\n                        ng-class=\"{\n                            'correct-answer' : artist.correct, \n                            'wrong-answer' : artist.incorrect\n                        }\"\n                        type='checkbox'\n                        name='artist.name'\n                        id='{{ artist.name }}'\n                        ng-value='artist.name'\n                        ng-click='lessonCtrl.userChoice(artist)'\n                    >{{ artist.name }}\n                    </button>\n                </div>\n            \n            </span>\n\n        </div>\n    </div>\n\n    <h2 ng-show='lessonCtrl.correctAnswer'>CORRECT!</h2>\n    <div ng-show='lessonCtrl.incorrectAnswer'>That's not it. Try Again.</div>\n\n    <button \n        class='btn btn-success btn-lg' \n        ng-show='lessonCtrl.correctAnswer'\n        ng-click='lessonCtrl.nextQuestion()'\n    >\n        Next Painting\n    </button>\n                \n</div>\n"
+	module.exports = "<div>\n\n    <h2>Famous Western Paintings</h2>\n    <div class=\"painting\">\n        <img src=\"{{ lessonCtrl.randomPainting.image }}\" alt=\"\">\n    </div>\n\n    <h3>Who painted this?</h3>\n\n    <div class='container'>\n        <div class='row'>\n                \n            <span \n                class='answer-list' \n                ng-repeat='artist in lessonCtrl.answerList'\n            >\n            \n                <div class='col-md-3 col-xs-6'>\n\n                    <!-- Modal Call -->\n                    <button\n                        class = \"answer-button btn-block\"\n                        ng-class=\"{\n                            'correct-answer' : artist.correct, \n                            'wrong-answer' : artist.incorrect\n                        }\"\n                        type='checkbox'\n                        name='artist.name'\n                        id='{{ artist.name }}'\n                        ng-value='artist.name'\n                        ng-click='lessonCtrl.userChoice(artist)'\n                        data-target='#modalCorrectAnswer'\n                        data-toggle='modal' \n                    >\n                        {{ artist.name }}\n                    </button>\n\n\n                    <!-- Modal -->\n                    <div \n                        class=\"modal fade\" \n                        id=\"{{ lessonCtrl.modalID }}\" \n                        tabindex=\"-1\" \n                        role=\"dialog\" \n                        aria-labelledby=\"{{ lessonCtrl.modalID }}\"\n                        data-backdrop=\"\"\n                    >\n                        <div class=\"modal-dialog modal-lg\" role=\"document\">\n                            <div class=\"modal-content\">\n                                \n                                <div class=\"modal-header\">\n                                    \n                                    <button \n                                        type=\"button\" \n                                        class=\"close\" \n                                        data-dismiss=\"modal\" \n                                        aria-label=\"Next Painting\"\n                                        ng-click='lessonCtrl.nextQuestion()'\n                                    >\n                                        <span aria-hidden=\"true\">&times;</span>\n                                    </button>\n                                    \n                                    <h4 class=\"modal-title\" id=\"{{ lessonCtrl.modalID }}\">{{ lessonCtrl.randomPainting.title }}</h4>\n                                    <div>by</div>\n                                    <h4 class=\"modal-title\" id=\"{{ lessonCtrl.modalID }}\">{{ lessonCtrl.randomPainting.artist.name }}</h4>\n                                </div>\n\n\n                                <div class=\"modal-body\">\n                                   <div class=\"row\"> \n                                        <div class=\"col-md-6\">\n                                            <div class=\"modal-painting\">\n                                                <img ng-src=\"{{ lessonCtrl.randomPainting.image }}\" alt=\"\">\n                                            </div>                                        \n                                        </div>\n                                        <div class=\"col-md-6\">\n                                            <div class='modal-description'>\n                                                {{ lessonCtrl.randomPainting.description }}\n                                            </div>                                        \n                                        </div>\n                                    </div>                                \n                                </div>\n\n\n                                <div class=\"modal-footer\">\n                                    \n                                    <button \n                                        type=\"button\" \n                                        class=\"btn btn-default close\" \n                                        data-dismiss=\"modal\"\n                                        ng-click='lessonCtrl.nextQuestion()'\n                                    >\n                                        Next Painting\n                                    </button>\n\n                                </div>\n                            </div>\n                        </div>\n                    </div>\n                    <!-- end Modal -->\n\n                </div><!-- end col -->\n\n            </span><!-- end ng-repeat -->\n\n        </div><!-- end row -->\n    </div><!-- end container -->\n\n</div>\n"
 
 /***/ },
 /* 25 */
@@ -42037,6 +42042,7 @@
 	Object.defineProperty(exports, "__esModule", {
 	    value: true
 	});
+	
 	function ArtLessonController(artAPIService, $stateParams, $state) {
 	    var ctrl = this;
 	
@@ -42072,6 +42078,7 @@
 	            selection.correct = true;
 	            ctrl.correctAnswer = true;
 	            ctrl.incorrectAnswer = false;
+	            ctrl.modalID = 'modalCorrectAnswer';
 	
 	            // if selection is wrong...
 	        } else {
@@ -42079,8 +42086,8 @@
 	            selection.incorrect = true;
 	            ctrl.incorrectAnswer = true;
 	            ctrl.correctFirstTime = false;
+	            ctrl.modalID = 'null';
 	        }
-	
 	        // console.log('userChoice');
 	    };
 	
@@ -42201,6 +42208,8 @@
 	            ctrl.correctAnswer = false;
 	            ctrl.incorrectAnswer = false;
 	            ctrl.correctFirstTime = true;
+	            ctrl.modalID = 'null';
+	
 	            randomPic();
 	            wrongAnswers();
 	
@@ -42215,6 +42224,7 @@
 	        ctrl.correctAnswer = false;
 	        ctrl.incorrectAnswer = false;
 	        ctrl.correctFirstTime = true;
+	        ctrl.modalID = 'null';
 	        getArt();
 	    }
 	

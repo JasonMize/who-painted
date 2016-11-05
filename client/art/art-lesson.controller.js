@@ -1,3 +1,4 @@
+
 function ArtLessonController(artAPIService, $stateParams, $state) {
     const ctrl = this;
 
@@ -19,7 +20,7 @@ function ArtLessonController(artAPIService, $stateParams, $state) {
             // console.log('lesson data: ', data);
         });
     }
- 
+
 
     // take user choice and determine right/wrong and take appropriate action
     ctrl.userChoice = function userChoice(selection) {
@@ -34,6 +35,7 @@ function ArtLessonController(artAPIService, $stateParams, $state) {
             selection.correct = true;
             ctrl.correctAnswer = true;
             ctrl.incorrectAnswer = false;
+            ctrl.modalID = 'modalCorrectAnswer';
 
         // if selection is wrong...
         } else {
@@ -41,8 +43,8 @@ function ArtLessonController(artAPIService, $stateParams, $state) {
             selection.incorrect = true;
             ctrl.incorrectAnswer = true;
             ctrl.correctFirstTime = false;
+            ctrl.modalID = 'null';
         }
-
         // console.log('userChoice');
     };
 
@@ -171,6 +173,8 @@ function ArtLessonController(artAPIService, $stateParams, $state) {
             ctrl.correctAnswer = false;
             ctrl.incorrectAnswer = false;
             ctrl.correctFirstTime = true;
+            ctrl.modalID = 'null';
+
             randomPic();
             wrongAnswers();
 
@@ -186,6 +190,7 @@ function ArtLessonController(artAPIService, $stateParams, $state) {
         ctrl.correctAnswer = false;
         ctrl.incorrectAnswer = false;
         ctrl.correctFirstTime = true;
+        ctrl.modalID = 'null';
         getArt();
     }
 

@@ -19,13 +19,20 @@ h6 {
     font-family: 'Marcellus SC', serif; 
 }
 
+.navbar {
+    margin-bottom: 0;
+}
 .menu {
     font-family: 'Marcellus SC', serif;     
 }
+.fa-paint-brush {
+    color: #5bc0de;
+}
+.menu-title {
+    margin-left: 5px;
+}
 
 .painting {
-    /*margin-top: 10px;*/
-    /*border: 1px solid red;*/
 }
 .painting img {
     height: 50vh;
@@ -40,9 +47,9 @@ h6 {
 }
 .tiles {
     height: 13vh;
-    background-color: #fff;
-    /*opacity: .5;*/
-    /*background-color: red;*/
+    /*background-color: #fff;*/
+    opacity: .5;
+    background-color: red;
 }
 .tile-fade {
     animation-name: tile-fade;

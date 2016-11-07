@@ -1,3 +1,4 @@
+import { range } from 'ramda';
 
 function ArtPageController(artAPIService, $state, $timeout) {
     const ctrl = this;
@@ -6,8 +7,11 @@ function ArtPageController(artAPIService, $state, $timeout) {
     ctrl.userChoice = function userChoice(selection) {
         // if selection is correct...
         if (selection.name === ctrl.randomPainting.artist.name) {
-            // if they get it correct first try, remove painting from pack
-            if (ctrl.correctFirstTime === true) {
+            // stop the random fade
+            ctrl.tileFade = false;
+
+            // if they get it correct first try and within time restraint, remove painting from pack
+            if (ctrl.correctFirstTime === true && ctrl.answeredInTime === true) {
                 ctrl.artSet.splice(ctrl.artIndex, 1);
             }
 
@@ -32,34 +36,44 @@ function ArtPageController(artAPIService, $state, $timeout) {
 
     // set variable for random tile to true - triggers ng-class of fade-tile in html
     function fadeTile() {
-        if (ctrl.randomTile) {
-            ctrl[`startFade${ctrl.randomTile}`] = true;
-        }
+        ctrl[`startFade${ctrl.randomTile}`] = true;
     }
 
     // pick random tile to fade
     function revealOne() {
-        ctrl.maxRange = Math.floor(ctrl.tiles.length);
-        ctrl.tileIndex = Math.floor(Math.random() * (ctrl.maxRange));
-        ctrl.randomTile = ctrl.tiles.splice(ctrl.tileIndex, 1).pop();
+        console.log('tileFade: ', ctrl.tileFade);
+        if (ctrl.tileFade === true) {
+            ctrl.maxRange = Math.floor(ctrl.tiles.length);
+            ctrl.tileIndex = Math.floor(Math.random() * (ctrl.maxRange));
+            ctrl.randomTile = ctrl.tiles.splice(ctrl.tileIndex, 1).pop();
 
-        fadeTile();
+            fadeTile();
 
-        if (ctrl.tiles.length > 0) {
-            $timeout(revealOne, 200);
+            if (ctrl.tiles.length > 0) {
+                $timeout(revealOne, 200);
+            } else {
+                // count answer as incorrect if not provided before the tiles are all revealed
+                $timeout(() => {
+                    ctrl.answeredInTime = false;
+                }, 1500);
+            }
         }
     }
 
+
     // setup for slow reveal of image
     function revealImage() {
-        ctrl.tiles = ([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,
-            13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24,
-            25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36,
-            37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48]);
-        for (let i = 1; i <= ctrl.tiles.length; i += 1) {
-            ctrl[`startFade${i}`] = false;
+        ctrl.tileFade = true;
+        ctrl.tiles = range(1, 49);
+
+        if (ctrl.tileFade === true) {
+            // set initial value of all tiles to false
+            for (let i = 1; i <= ctrl.tiles.length; i += 1) {
+                ctrl[`startFade${i}`] = false;
+            }
+
+            revealOne();
         }
-        revealOne();
     }
 
 
@@ -188,6 +202,7 @@ function ArtPageController(artAPIService, $state, $timeout) {
             ctrl.correctAnswer = false;
             ctrl.incorrectAnswer = false;
             ctrl.correctFirstTime = true;
+            ctrl.answeredInTime = true;
             ctrl.modalID = 'null';
 
             randomPic();
@@ -205,6 +220,7 @@ function ArtPageController(artAPIService, $state, $timeout) {
         ctrl.correctAnswer = false;
         ctrl.incorrectAnswer = false;
         ctrl.correctFirstTime = true;
+        ctrl.answeredInTime = true;
         ctrl.modalID = 'null';
         getArt();
     }

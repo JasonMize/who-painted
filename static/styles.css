@@ -1,3 +1,9 @@
+/* animation keyframes */
+@keyframes tile-fade {
+    from { opacity: 100; }
+    to { opacity: 0; }
+}
+
 body {
     padding-top: 70px;
     text-align: center;
@@ -18,17 +24,42 @@ h6 {
 }
 
 .painting {
-    margin-top: 10px;
+    /*margin-top: 10px;*/
+    /*border: 1px solid red;*/
 }
 .painting img {
+    height: 50vh;
     max-width: 80vw;
-    max-height: 50vh;
     border: 5px solid #000;
+    margin-top: -56vh;
+}
+.image-covered {
+    display: inline-block;
+}
+.tile-cover {
+}
+.tiles {
+    height: 13vh;
+    background-color: #fff;
+    /*opacity: .5;*/
+    /*background-color: red;*/
+}
+.tile-fade {
+    animation-name: tile-fade;
+    animation-duration: 1.5s;
+    animation-timing-function: ease-in; 
+    animation-fill-mode: forwards;
+}
+
+.who-painted-prompt {
+    margin-top: 0px;
 }
 .wrong-x {
-    font-size: 3em;
+    font-size: 2em;
     color: #d9534f;
     margin-left: 25px;
+    margin-bottom: -10px;
+    /*vertical-align: bottom;*/
 }
 .correct-check {
     font-size: 3em;

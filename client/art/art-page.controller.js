@@ -29,6 +29,61 @@ function ArtPageController(artAPIService, $state) {
         // console.log('userChoice');
     };
 
+    function fadeTile() {
+        // debugger;
+        console.log('ctrl.randomTile: ', ctrl.randomTile);
+        if (ctrl.randomTile) {
+            ctrl[`startFade${ctrl.randomTile}`] = true;
+        }
+        console.log('startFade', ctrl[`startFade${ctrl.randomTile}`]);
+        // if (ctrl.randomTile === 1) {
+        //     ctrl.startFade1 = true;
+        // } else if (ctrl.randomTile === 2) {
+        //     ctrl.startFade2 = true;
+        // } else if (ctrl.randomTile === 3) {
+        //     ctrl.startFade3 = true;
+        // } else if (ctrl.randomTile === 4) {
+        //     ctrl.startFade4 = true;
+        // } else if (ctrl.randomTile === 5) {
+        //     ctrl.startFade5 = true;
+        // } else if (ctrl.randomTile === 6) {
+        //     ctrl.startFade6 = true;
+        // } else if (ctrl.randomTile === 7) {
+        //     ctrl.startFade7 = true;
+        // } else if (ctrl.randomTile === 8) {
+        //     ctrl.startFade8 = true;
+        // } else if (ctrl.randomTile === 9) {
+        //     ctrl.startFade9 = true;
+        // } else if (ctrl.randomTile === 10) {
+        //     ctrl.startFade10 = true;
+        // } else if (ctrl.randomTile === 11) {
+        //     ctrl.startFade11 = true;
+        // } else if (ctrl.randomTile === 12) {
+        //     ctrl.startFade12 = true;
+        // }
+    }
+
+    function revealOne() {
+        ctrl.maxRange = Math.floor(ctrl.tiles.length);
+        ctrl.tileIndex = Math.floor(Math.random() * (ctrl.maxRange));
+        ctrl.randomTile = ctrl.tiles.splice(ctrl.tileIndex, 1).pop();
+
+        fadeTile();
+
+        if (ctrl.tiles.length > 0) {
+            setTimeout(revealOne, 250);
+        }
+    }
+
+    // control the slow reveal of the painting
+    function revealImage() {
+        ctrl.tiles = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+        for (let i = 1; i <= ctrl.tiles.length; i += 1) {
+            ctrl[`startFade${i}`] = false;
+        }
+        revealOne();
+    }
+
 
     // takes wrong answers and correct answer and creates answerList
     function multipleChoiceList() {
@@ -51,6 +106,7 @@ function ArtPageController(artAPIService, $state) {
 
         // console.log('multipleChoiceList');
         // console.log('ctrl.answerList: ', ctrl.answerList);
+        revealImage();
     }
 
 

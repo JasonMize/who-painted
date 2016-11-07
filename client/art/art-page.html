@@ -2,8 +2,32 @@
 
     <h2>Famous Western Paintings</h2>
     <div class="painting">
-      
-        <img src="{{ apeCtrl.randomPainting.image }}" alt="">
+        
+        <div class="container">
+            <div class="row">
+                
+                <div class="tile-cover">
+                    <span class="col-xs-1 tiles tile-1" ng-class="{ 'tile-fade' : apeCtrl.startFade1 }"></span>
+                    <span class="col-xs-1 tiles tile-2" ng-class="{ 'tile-fade' : apeCtrl.startFade2 }"></span>
+                    <span class="col-xs-1 tiles tile-3" ng-class="{ 'tile-fade' : apeCtrl.startFade3 }"></span>
+                    <span class="col-xs-1 tiles tile-4" ng-class="{ 'tile-fade' : apeCtrl.startFade4 }"></span>
+                    <span class="col-xs-1 tiles tile-5" ng-class="{ 'tile-fade' : apeCtrl.startFade5 }"></span>
+                    <span class="col-xs-1 tiles tile-6" ng-class="{ 'tile-fade' : apeCtrl.startFade6 }"></span>
+                    <span class="col-xs-1 tiles tile-7" ng-class="{ 'tile-fade' : apeCtrl.startFade7 }"></span>
+                    <span class="col-xs-1 tiles tile-8" ng-class="{ 'tile-fade' : apeCtrl.startFade8 }"></span>
+                    <span class="col-xs-1 tiles tile-9" ng-class="{ 'tile-fade' : apeCtrl.startFade9 }"></span>
+                    <span class="col-xs-1 tiles tile-10" ng-class="{ 'tile-fade' : apeCtrl.startFade10 }"></span>
+                    <span class="col-xs-1 tiles tile-11" ng-class="{ 'tile-fade' : apeCtrl.startFade11 }"></span>
+                    <span class="col-xs-1 tiles tile-12" ng-class="{ 'tile-fade' : apeCtrl.startFade12 }"></span>                    
+                </div>
+
+                <div class="image-covered">
+                    <img src="{{ apeCtrl.randomPainting.image }}" alt="">
+                </div>
+            
+            </div>
+        </div>
+
       
         <i 
             ng-class="{
@@ -14,6 +38,8 @@
         ></i>
     
     </div>
+
+    <div style='clear: "both";'></div>
 
     <h3>Who painted this?</h3>
 

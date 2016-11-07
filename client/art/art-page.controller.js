@@ -1,5 +1,5 @@
 
-function ArtPageController(artAPIService, $state) {
+function ArtPageController(artAPIService, $state, $timeout) {
     const ctrl = this;
 
     // take user choice and determine right/wrong and take appropriate action
@@ -35,32 +35,7 @@ function ArtPageController(artAPIService, $state) {
         if (ctrl.randomTile) {
             ctrl[`startFade${ctrl.randomTile}`] = true;
         }
-        console.log('startFade', ctrl[`startFade${ctrl.randomTile}`]);
-        // if (ctrl.randomTile === 1) {
-        //     ctrl.startFade1 = true;
-        // } else if (ctrl.randomTile === 2) {
-        //     ctrl.startFade2 = true;
-        // } else if (ctrl.randomTile === 3) {
-        //     ctrl.startFade3 = true;
-        // } else if (ctrl.randomTile === 4) {
-        //     ctrl.startFade4 = true;
-        // } else if (ctrl.randomTile === 5) {
-        //     ctrl.startFade5 = true;
-        // } else if (ctrl.randomTile === 6) {
-        //     ctrl.startFade6 = true;
-        // } else if (ctrl.randomTile === 7) {
-        //     ctrl.startFade7 = true;
-        // } else if (ctrl.randomTile === 8) {
-        //     ctrl.startFade8 = true;
-        // } else if (ctrl.randomTile === 9) {
-        //     ctrl.startFade9 = true;
-        // } else if (ctrl.randomTile === 10) {
-        //     ctrl.startFade10 = true;
-        // } else if (ctrl.randomTile === 11) {
-        //     ctrl.startFade11 = true;
-        // } else if (ctrl.randomTile === 12) {
-        //     ctrl.startFade12 = true;
-        // }
+        // console.log('startFade', ctrl[`startFade${ctrl.randomTile}`]);
     }
 
     function revealOne() {
@@ -71,13 +46,16 @@ function ArtPageController(artAPIService, $state) {
         fadeTile();
 
         if (ctrl.tiles.length > 0) {
-            setTimeout(revealOne, 250);
+            $timeout(revealOne, 200);
         }
     }
 
     // control the slow reveal of the painting
     function revealImage() {
-        ctrl.tiles = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+        ctrl.tiles = ([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,
+            13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24,
+            25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36,
+            37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48]);
         for (let i = 1; i <= ctrl.tiles.length; i += 1) {
             ctrl[`startFade${i}`] = false;
         }

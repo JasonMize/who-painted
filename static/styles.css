@@ -24,64 +24,42 @@ h6 {
 }
 
 .painting {
-    margin-top: 10px;
+    /*margin-top: 10px;*/
     /*border: 1px solid red;*/
 }
 .painting img {
+    height: 50vh;
     max-width: 80vw;
-    max-height: 50vh;
     border: 5px solid #000;
+    margin-top: -56vh;
 }
-
 .image-covered {
+    display: inline-block;
 }
 .tile-cover {
-    position: fixed;
-    margin-left: 7vw;
-    width: 80vw;
+}
+.tiles {
+    height: 13vh;
+    background-color: #fff;
+    /*opacity: .5;*/
+    /*background-color: red;*/
 }
 .tile-fade {
-    /*visibility: hidden;*/
     animation-name: tile-fade;
     animation-duration: 1.5s;
     animation-timing-function: ease-in; 
     animation-fill-mode: forwards;
-
-}
-.tiles {
-    background-color: red;
-    opacity: .5;
-    height: 50vh;
-}
-.tile-1 {
-}
-.tile-2 {
-}
-.tile-3 {
-}
-.tile-4 {
-}
-.tile-5 {
-}
-.tile-6 {
-}
-.tile-7 {
-}
-.tile-8 {
-}
-.tile-9 {
-}
-.tile-10 {
-}
-.tile-11 {
-}
-.tile-12 {
 }
 
+.who-painted-prompt {
+    margin-top: 0px;
+}
 .wrong-x {
-    font-size: 3em;
+    font-size: 2em;
     color: #d9534f;
     margin-left: 25px;
+    margin-bottom: -10px;
+    /*vertical-align: bottom;*/
 }
 .correct-check {
     font-size: 3em;

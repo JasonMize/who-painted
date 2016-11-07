@@ -1,5 +1,5 @@
 
-function ArtLessonController(artAPIService, $stateParams, $state) {
+function ArtLessonController(artAPIService, $stateParams, $state, $timeout) {
     const ctrl = this;
 
     // if not logged in keep on artPage
@@ -49,6 +49,40 @@ function ArtLessonController(artAPIService, $stateParams, $state) {
     };
 
 
+
+    // set variable for random tile to true - triggers ng-class of fade-tile in html
+    function fadeTile() {
+        if (ctrl.randomTile) {
+            ctrl[`startFade${ctrl.randomTile}`] = true;
+        }
+    }
+
+    // pick random tile to fade
+    function revealOne() {
+        ctrl.maxRange = Math.floor(ctrl.tiles.length);
+        ctrl.tileIndex = Math.floor(Math.random() * (ctrl.maxRange));
+        ctrl.randomTile = ctrl.tiles.splice(ctrl.tileIndex, 1).pop();
+
+        fadeTile();
+
+        if (ctrl.tiles.length > 0) {
+            $timeout(revealOne, 200);
+        }
+    }
+
+    // setup for slow reveal of image
+    function revealImage() {
+        ctrl.tiles = ([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,
+            13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24,
+            25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36,
+            37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48]);
+        for (let i = 1; i <= ctrl.tiles.length; i += 1) {
+            ctrl[`startFade${i}`] = false;
+        }
+        revealOne();
+    }
+
+
     // takes wrong answers and correct answer and creates answerList
     function multipleChoiceList() {
         // add correct answer into wrong answers
@@ -70,6 +104,7 @@ function ArtLessonController(artAPIService, $stateParams, $state) {
 
         // console.log('multipleChoiceList');
         // console.log('ctrl.answerList: ', ctrl.answerList);
+        revealImage();
     }
 
 

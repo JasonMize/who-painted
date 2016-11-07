@@ -29,15 +29,15 @@ function ArtPageController(artAPIService, $state, $timeout) {
         // console.log('userChoice');
     };
 
+
+    // set variable for random tile to true - triggers ng-class of fade-tile in html
     function fadeTile() {
-        // debugger;
-        console.log('ctrl.randomTile: ', ctrl.randomTile);
         if (ctrl.randomTile) {
             ctrl[`startFade${ctrl.randomTile}`] = true;
         }
-        // console.log('startFade', ctrl[`startFade${ctrl.randomTile}`]);
     }
 
+    // pick random tile to fade
     function revealOne() {
         ctrl.maxRange = Math.floor(ctrl.tiles.length);
         ctrl.tileIndex = Math.floor(Math.random() * (ctrl.maxRange));
@@ -50,7 +50,7 @@ function ArtPageController(artAPIService, $state, $timeout) {
         }
     }
 
-    // control the slow reveal of the painting
+    // setup for slow reveal of image
     function revealImage() {
         ctrl.tiles = ([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,
             13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24,

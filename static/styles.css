@@ -4,6 +4,10 @@
     to { opacity: 0; }
 }
 
+.favicon {
+    background-color: #fff;
+}
+
 body {
     padding-top: 50px;
     text-align: center;
@@ -19,8 +23,13 @@ h6 {
     font-family: 'Marcellus SC', serif; 
 }
 
+hr {
+    border-color: #ccc;
+}
+
 .navbar {
     margin-bottom: 0;
+    border-bottom-color: #ccc;
 }
 .menu {
     font-family: 'Marcellus SC', serif;     
@@ -47,10 +56,10 @@ h6 {
 }
 .tiles {
     height: 13vh;
-    /*background-color: #fff;*/
-    opacity: .5;
+    background-color: #fff;
+/*    opacity: .5;
     background-color: red;
-}
+*/}
 .tile-fade {
     animation-name: tile-fade;
     animation-duration: 1.5s;
@@ -101,13 +110,13 @@ h6 {
 }
 
 .staging-artpacks {
-    border: 1px solid 999;
-    background-color: #ccc;
+    border: 1px solid #ccc;
+    background-color: #f8f8f8;
     margin: 10px;
     padding: 30px;
 }
 .staging-artpacks img {
-    border: 5px solid black;
+    border: 5px solid #000;
     width: 100%;
 }
 .staging-titles {

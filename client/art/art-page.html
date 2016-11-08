@@ -71,7 +71,10 @@
     </div>
 
 
-    <h3 class='who-painted-prompt'>Who painted this?
+     <div class='who-painted-prompt'>
+        <h3>
+            Who painted this?
+        </h3>
         <i 
             ng-class="{
                 'wrong-x' : apeCtrl.incorrectAnswer,
@@ -86,7 +89,7 @@
             }"
             aria-hidden='true'
         ></i>
-    </h3>
+    </div>
 
     <div class='row'>
             
@@ -142,25 +145,27 @@
                                         <div class="modal-painting">
                                             
                                             <img ng-src="{{ apeCtrl.randomPainting.image }}" alt="">
+                        
+                                            <div class="wrong-right-icons">
+                                                <i 
+                                                    ng-class="{
+                                                        'wrong-x' : !apeCtrl.correctFirstTime,
+                                                        'fa fa-times' : !apeCtrl.correctFirstTime,
+                                                        'correct-check' : apeCtrl.correctFirstTime,
+                                                        'fa fa-check' : apeCtrl.correctFirstTime, 
+                                                    }" 
+                                                    aria-hidden="true"
+                                                ></i>
+                                                <i 
+                                                    class='fa fa-clock-o'
+                                                    ng-class="{
+                                                        'wrong-x' : !apeCtrl.answeredInTime,
+                                                        'correct-check' : apeCtrl.answeredInTime,
+                                                    }" 
+                                                    aria-hidden="true"
+                                                ></i>
+                                            </div>
                                             
-                                            <i 
-                                                ng-class="{
-                                                    'wrong-x' : !apeCtrl.correctFirstTime,
-                                                    'fa fa-times' : !apeCtrl.correctFirstTime,
-                                                    'correct-check' : apeCtrl.correctFirstTime,
-                                                    'fa fa-check' : apeCtrl.correctFirstTime, 
-                                                }" 
-                                                aria-hidden="true"
-                                            ></i>
-                                            <i 
-                                                class='fa fa-clock-o'
-                                                ng-class="{
-                                                    'wrong-x' : !apeCtrl.answeredInTime,
-                                                    'correct-check' : apeCtrl.answeredInTime,
-                                                }" 
-                                                aria-hidden="true"
-                                            ></i>
-
                                         </div>                                        
                                     </div>
                                     <div class="col-md-6">

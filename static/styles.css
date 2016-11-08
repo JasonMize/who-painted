@@ -42,6 +42,7 @@ hr {
 }
 
 .painting {
+    height: 53vh;
 }
 .painting img {
     height: 50vh;
@@ -57,9 +58,9 @@ hr {
 .tiles {
     height: 13vh;
     background-color: #fff;
-/*    opacity: .5;
-    background-color: red;
-*/}
+    /*opacity: .5;*/
+    /*background-color: red;*/
+}
 .tile-fade {
     animation-name: tile-fade;
     animation-duration: 1.5s;
@@ -67,20 +68,28 @@ hr {
     animation-fill-mode: forwards;
 }
 
-.who-painted-prompt {
-    margin-top: 0px;
+.who-painted-prompt h3 {
+    margin: 0px;
+    padding-bottom: 5px;
 }
 .wrong-x {
-    font-size: 2em;
+    font-size: 3em;
     color: #d9534f;
-    margin-left: 25px;
-    margin-bottom: -10px;
+    margin: 0px 25px -10px 25px;
+    /*margin-left: 25px;*/
+    /*margin-bottom: -10px;*/
     /*vertical-align: bottom;*/
 }
 .correct-check {
     font-size: 3em;
     color: #5cb85c;
-    margin-left: 25px;
+    /*margin-left: 25px;*/
+    margin: 0px 25px -10px 25px;
+}
+.wrong-right-icons {
+    margin-top: 5px;
+    margin-bottom: 40px;
+    text-align: center;
 }
 
 .answer-list {
@@ -129,6 +138,7 @@ hr {
     min-width: 95vw;
 }
 .modal-painting {
+    max-height: 50vh;
 }
 .modal-painting img {
     max-width: 100%;

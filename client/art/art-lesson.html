@@ -71,7 +71,10 @@
     </div>
 
 
-    <h3 class='who-painted-prompt'>Who painted this?
+    <div class='who-painted-prompt'>
+        <h3>
+            Who painted this?
+        </h3>
         <i 
             ng-class="{
                 'wrong-x' : lessonCtrl.incorrectAnswer,
@@ -86,7 +89,7 @@
             }"
             aria-hidden='true'
         ></i>
-    </h3>
+    </div>
 
     <div class='row'>
             
@@ -142,24 +145,26 @@
                                         <div class="modal-painting">
                                             
                                             <img ng-src="{{ lessonCtrl.randomPainting.image }}" alt="">
-
-                                            <i 
-                                                ng-class="{
-                                                    'wrong-x' : !lessonCtrl.correctFirstTime,
-                                                    'fa fa-times' : !lessonCtrl.correctFirstTime,
-                                                    'correct-check' : lessonCtrl.correctFirstTime,
-                                                    'fa fa-check' : lessonCtrl.correctFirstTime, 
-                                                }" 
-                                                aria-hidden="true"
-                                            ></i>
-                                            <i 
-                                                class='fa fa-clock-o'
-                                                ng-class="{
-                                                    'wrong-x' : !lessonCtrl.answeredInTime,
-                                                    'correct-check' : lessonCtrl.answeredInTime,
-                                                }" 
-                                                aria-hidden="true"
-                                            ></i>
+                                            
+                                            <div class="wrong-right-icons">
+                                                <i 
+                                                    ng-class="{
+                                                        'wrong-x' : !lessonCtrl.correctFirstTime,
+                                                        'fa fa-times' : !lessonCtrl.correctFirstTime,
+                                                        'correct-check' : lessonCtrl.correctFirstTime,
+                                                        'fa fa-check' : lessonCtrl.correctFirstTime, 
+                                                    }" 
+                                                    aria-hidden="true"
+                                                ></i>
+                                                <i 
+                                                    class='fa fa-clock-o'
+                                                    ng-class="{
+                                                        'wrong-x' : !lessonCtrl.answeredInTime,
+                                                        'correct-check' : lessonCtrl.answeredInTime,
+                                                    }" 
+                                                    aria-hidden="true"
+                                                ></i> 
+                                            </div>
 
                                         </div>                                        
                                     </div>

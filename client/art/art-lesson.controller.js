@@ -18,7 +18,8 @@ function ArtLessonController(artAPIService, $stateParams, $state, $timeout) {
         const id = { id: $stateParams.lessonId };
         return artAPIService.artpacklevel.get(id).$promise.then((data) => {
             ctrl.lesson = data.level_set;
-            // console.log('lesson data: ', data);
+
+            console.log('lesson data: ', data);
         });
     }
 
@@ -115,7 +116,7 @@ function ArtLessonController(artAPIService, $stateParams, $state, $timeout) {
             }
         }
 
-        // console.log('multipleChoiceList');
+        console.log('multipleChoiceList');
         // console.log('ctrl.answerList: ', ctrl.answerList);
         revealImage();
     }
@@ -126,7 +127,7 @@ function ArtLessonController(artAPIService, $stateParams, $state, $timeout) {
         ctrl.maxRange = Math.floor(ctrl.artists.length);
         ctrl.artistIndex = Math.floor(Math.random() * (ctrl.maxRange));
 
-        // console.log('randomArtist');
+        console.log('randomArtist');
         // console.log('ctrl.artistIndex: ', ctrl.artistIndex);
     }
 
@@ -148,7 +149,7 @@ function ArtLessonController(artAPIService, $stateParams, $state, $timeout) {
             }
         }
 
-        // console.log('wrongAnswers');
+        console.log('wrongAnswers');
         // console.log('ctrl.wrongAnswers: ', ctrl.wrongAnswers);
         multipleChoiceList();
     }
@@ -159,7 +160,7 @@ function ArtLessonController(artAPIService, $stateParams, $state, $timeout) {
         return artAPIService.artist.get().$promise.then((data) => {
             ctrl.artists = data.results;
 
-            // console.log('getArtist');
+            console.log('getArtist');
             // console.log('ctrl.artists: ', ctrl.artists);
             wrongAnswers();
         });
@@ -173,7 +174,7 @@ function ArtLessonController(artAPIService, $stateParams, $state, $timeout) {
         ctrl.artIndex = Math.floor(Math.random() * (ctrl.maxRange));
         ctrl.randomPainting = ctrl.artSet[ctrl.artIndex];
 
-        // console.log('randomPic');
+        console.log('randomPic');
         // console.log('ctrl.randomPainting: ', ctrl.randomPainting);
         getArtist();
     }
@@ -194,7 +195,7 @@ function ArtLessonController(artAPIService, $stateParams, $state, $timeout) {
                 }
             }
 
-            // console.log('getArtPack');
+            console.log('getArtPack');
             // console.log('ctrl.artSet: ', ctrl.artSet);
             randomPic();
         });
@@ -206,7 +207,7 @@ function ArtLessonController(artAPIService, $stateParams, $state, $timeout) {
         return artAPIService.artwork.get().$promise.then((data) => {
             ctrl.paintings = data.results;
 
-            // console.log('getArt');
+            console.log('getArt');
             // console.log('ctrl.paintings: ', ctrl.paintings);
             getArtPack();
         });
@@ -230,11 +231,12 @@ function ArtLessonController(artAPIService, $stateParams, $state, $timeout) {
         } else {
             $state.go('artLevels', { artpackId: $stateParams.artpackId });
         }
-        // console.log('nextQuestion');
+        console.log('nextQuestion');
     };
 
 
     function init() {
+        console.log("here at the init");
         ctrl.correctAnswer = false;
         ctrl.incorrectAnswer = false;
         ctrl.correctFirstTime = true;

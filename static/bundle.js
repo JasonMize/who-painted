@@ -50800,7 +50800,7 @@
 /* 19 */
 /***/ function(module, exports) {
 
-	module.exports = "\n<div class='sign-up-invite'>\n    <h1>You win!</h1>\n    <h3>\n        <a href='/accounts/register'>Sign up</a> \n        for more fun and to track your progress. (free)\n    </h3>\n    <h2>\n        <a ui-sref='artPage'>\n            Play again.\n        </a>    \n    </h2>\n</div>\n"
+	module.exports = "\n<div class='sign-up-invite'>\n    <h1>Great work!</h1>\n    <h3>\n        <a href='/accounts/register'>Sign up</a> \n        for more fun and to track your progress. (free)\n    </h3>\n    <h2>\n        <a ui-sref='artPage'>\n            Play again.\n        </a>    \n    </h2>\n</div>\n"
 
 /***/ },
 /* 20 */

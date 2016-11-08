@@ -70,17 +70,27 @@
 	
 	var _angularCookies2 = _interopRequireDefault(_angularCookies);
 	
-	var _art = __webpack_require__(7);
+	var _angularTimer = __webpack_require__(7);
+	
+	var _angularTimer2 = _interopRequireDefault(_angularTimer);
+	
+	var _humanizeDuration = __webpack_require__(8);
+	
+	var _humanizeDuration2 = _interopRequireDefault(_humanizeDuration);
+	
+	var _art = __webpack_require__(9);
 	
 	var _art2 = _interopRequireDefault(_art);
 	
-	var _app = __webpack_require__(27);
+	var _app = __webpack_require__(29);
 	
 	var _app2 = _interopRequireDefault(_app);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
-	var AppModule = _angular2.default.module('app', [_angularUiRouter2.default, _angularCookies2.default, _art2.default.name]).component('app', _app2.default).config(function ($stateProvider, $urlRouterProvider) {
+	var AppModule = _angular2.default.module('app', [
+	// humanizeDuration.name,
+	_angularTimer2.default.name, _angularUiRouter2.default, _angularCookies2.default, _art2.default.name]).component('app', _app2.default).config(function ($stateProvider, $urlRouterProvider) {
 	    $urlRouterProvider.otherwise('/');
 	
 	    $stateProvider.state('index', {
@@ -40589,6 +40599,1012 @@
 
 /***/ },
 /* 7 */
+/***/ function(module, exports) {
+
+	/**
+	 * angular-timer - v1.3.3 - 2015-06-15 3:07 PM
+	 * https://github.com/siddii/angular-timer
+	 *
+	 * Copyright (c) 2015 Siddique Hameed
+	 * Licensed MIT <https://github.com/siddii/angular-timer/blob/master/LICENSE.txt>
+	 */
+	var timerModule = angular.module('timer', [])
+	  .directive('timer', ['$compile', function ($compile) {
+	    return  {
+	      restrict: 'EA',
+	      replace: false,
+	      scope: {
+	        interval: '=interval',
+	        startTimeAttr: '=startTime',
+	        endTimeAttr: '=endTime',
+	        countdownattr: '=countdown',
+	        finishCallback: '&finishCallback',
+	        autoStart: '&autoStart',
+	        language: '@?',
+	        fallback: '@?',
+	        maxTimeUnit: '='
+	      },
+	      controller: ['$scope', '$element', '$attrs', '$timeout', 'I18nService', '$interpolate', 'progressBarService', function ($scope, $element, $attrs, $timeout, I18nService, $interpolate, progressBarService) {
+	
+	        // Checking for trim function since IE8 doesn't have it
+	        // If not a function, create tirm with RegEx to mimic native trim
+	        if (typeof String.prototype.trim !== 'function') {
+	          String.prototype.trim = function () {
+	            return this.replace(/^\s+|\s+$/g, '');
+	          };
+	        }
+	
+	        //angular 1.2 doesn't support attributes ending in "-start", so we're
+	        //supporting both "autostart" and "auto-start" as a solution for
+	        //backward and forward compatibility.
+	        $scope.autoStart = $attrs.autoStart || $attrs.autostart;
+	
+	
+	        $scope.language = $scope.language || 'en';
+	        $scope.fallback = $scope.fallback || 'en';
+	
+	        //allow to change the language of the directive while already launched
+	        $scope.$watch('language', function(newVal, oldVal) {
+	          if(newVal !== undefined) {
+	            i18nService.init(newVal, $scope.fallback);
+	          }
+	        });
+	
+	        //init momentJS i18n, default english
+	        var i18nService = new I18nService();
+	        i18nService.init($scope.language, $scope.fallback);
+	
+	        //progress bar
+	        $scope.displayProgressBar = 0;
+	        $scope.displayProgressActive = 'active'; //Bootstrap active effect for progress bar
+	
+	        if ($element.html().trim().length === 0) {
+	          $element.append($compile('<span>' + $interpolate.startSymbol() + 'millis' + $interpolate.endSymbol() + '</span>')($scope));
+	        } else {
+	          $element.append($compile($element.contents())($scope));
+	        }
+	
+	        $scope.startTime = null;
+	        $scope.endTime = null;
+	        $scope.timeoutId = null;
+	        $scope.countdown = $scope.countdownattr && parseInt($scope.countdownattr, 10) >= 0 ? parseInt($scope.countdownattr, 10) : undefined;
+	        $scope.isRunning = false;
+	
+	        $scope.$on('timer-start', function () {
+	          $scope.start();
+	        });
+	
+	        $scope.$on('timer-resume', function () {
+	          $scope.resume();
+	        });
+	
+	        $scope.$on('timer-stop', function () {
+	          $scope.stop();
+	        });
+	
+	        $scope.$on('timer-clear', function () {
+	          $scope.clear();
+	        });
+	
+	        $scope.$on('timer-reset', function () {
+	          $scope.reset();
+	        });
+	
+	        $scope.$on('timer-set-countdown', function (e, countdown) {
+	          $scope.countdown = countdown;
+	        });
+	
+	        function resetTimeout() {
+	          if ($scope.timeoutId) {
+	            clearTimeout($scope.timeoutId);
+	          }
+	        }
+	
+	        $scope.$watch('startTimeAttr', function(newValue, oldValue) {
+	          if (newValue !== oldValue && $scope.isRunning) {
+	            $scope.start();
+	          }
+	        });
+	
+	        $scope.$watch('endTimeAttr', function(newValue, oldValue) {
+	          if (newValue !== oldValue && $scope.isRunning) {
+	            $scope.start();
+	          }
+	        });
+	
+	        $scope.start = $element[0].start = function () {
+	          $scope.startTime = $scope.startTimeAttr ? moment($scope.startTimeAttr) : moment();
+	          $scope.endTime = $scope.endTimeAttr ? moment($scope.endTimeAttr) : null;
+	          if (!$scope.countdown) {
+	            $scope.countdown = $scope.countdownattr && parseInt($scope.countdownattr, 10) > 0 ? parseInt($scope.countdownattr, 10) : undefined;
+	          }
+	          resetTimeout();
+	          tick();
+	          $scope.isRunning = true;
+	        };
+	
+	        $scope.resume = $element[0].resume = function () {
+	          resetTimeout();
+	          if ($scope.countdownattr) {
+	            $scope.countdown += 1;
+	          }
+	          $scope.startTime = moment().diff((moment($scope.stoppedTime).diff(moment($scope.startTime))));
+	          tick();
+	          $scope.isRunning = true;
+	        };
+	
+	        $scope.stop = $scope.pause = $element[0].stop = $element[0].pause = function () {
+	          var timeoutId = $scope.timeoutId;
+	          $scope.clear();
+	          $scope.$emit('timer-stopped', {timeoutId: timeoutId, millis: $scope.millis, seconds: $scope.seconds, minutes: $scope.minutes, hours: $scope.hours, days: $scope.days});
+	        };
+	
+	        $scope.clear = $element[0].clear = function () {
+	          // same as stop but without the event being triggered
+	          $scope.stoppedTime = moment();
+	          resetTimeout();
+	          $scope.timeoutId = null;
+	          $scope.isRunning = false;
+	        };
+	
+	        $scope.reset = $element[0].reset = function () {
+	          $scope.startTime = $scope.startTimeAttr ? moment($scope.startTimeAttr) : moment();
+	          $scope.endTime = $scope.endTimeAttr ? moment($scope.endTimeAttr) : null;
+	          $scope.countdown = $scope.countdownattr && parseInt($scope.countdownattr, 10) > 0 ? parseInt($scope.countdownattr, 10) : undefined;
+	          resetTimeout();
+	          tick();
+	          $scope.isRunning = false;
+	          $scope.clear();
+	        };
+	
+	        $element.bind('$destroy', function () {
+	          resetTimeout();
+	          $scope.isRunning = false;
+	        });
+	
+	
+	        function calculateTimeUnits() {
+	          var timeUnits = {}; //will contains time with units
+	
+	          if ($attrs.startTime !== undefined){
+	            $scope.millis = moment().diff(moment($scope.startTimeAttr));
+	          }
+	
+	          timeUnits = i18nService.getTimeUnits($scope.millis);
+	
+	          // compute time values based on maxTimeUnit specification
+	          if (!$scope.maxTimeUnit || $scope.maxTimeUnit === 'day') {
+	            $scope.seconds = Math.floor(($scope.millis / 1000) % 60);
+	            $scope.minutes = Math.floor((($scope.millis / (60000)) % 60));
+	            $scope.hours = Math.floor((($scope.millis / (3600000)) % 24));
+	            $scope.days = Math.floor((($scope.millis / (3600000)) / 24));
+	            $scope.months = 0;
+	            $scope.years = 0;
+	          } else if ($scope.maxTimeUnit === 'second') {
+	            $scope.seconds = Math.floor($scope.millis / 1000);
+	            $scope.minutes = 0;
+	            $scope.hours = 0;
+	            $scope.days = 0;
+	            $scope.months = 0;
+	            $scope.years = 0;
+	          } else if ($scope.maxTimeUnit === 'minute') {
+	            $scope.seconds = Math.floor(($scope.millis / 1000) % 60);
+	            $scope.minutes = Math.floor($scope.millis / 60000);
+	            $scope.hours = 0;
+	            $scope.days = 0;
+	            $scope.months = 0;
+	            $scope.years = 0;
+	          } else if ($scope.maxTimeUnit === 'hour') {
+	            $scope.seconds = Math.floor(($scope.millis / 1000) % 60);
+	            $scope.minutes = Math.floor((($scope.millis / (60000)) % 60));
+	            $scope.hours = Math.floor($scope.millis / 3600000);
+	            $scope.days = 0;
+	            $scope.months = 0;
+	            $scope.years = 0;
+	          } else if ($scope.maxTimeUnit === 'month') {
+	            $scope.seconds = Math.floor(($scope.millis / 1000) % 60);
+	            $scope.minutes = Math.floor((($scope.millis / (60000)) % 60));
+	            $scope.hours = Math.floor((($scope.millis / (3600000)) % 24));
+	            $scope.days = Math.floor((($scope.millis / (3600000)) / 24) % 30);
+	            $scope.months = Math.floor((($scope.millis / (3600000)) / 24) / 30);
+	            $scope.years = 0;
+	          } else if ($scope.maxTimeUnit === 'year') {
+	            $scope.seconds = Math.floor(($scope.millis / 1000) % 60);
+	            $scope.minutes = Math.floor((($scope.millis / (60000)) % 60));
+	            $scope.hours = Math.floor((($scope.millis / (3600000)) % 24));
+	            $scope.days = Math.floor((($scope.millis / (3600000)) / 24) % 30);
+	            $scope.months = Math.floor((($scope.millis / (3600000)) / 24 / 30) % 12);
+	            $scope.years = Math.floor(($scope.millis / (3600000)) / 24 / 365);
+	          }
+	          // plural - singular unit decision (old syntax, for backwards compatibility and English only, could be deprecated!)
+	          $scope.secondsS = ($scope.seconds === 1) ? '' : 's';
+	          $scope.minutesS = ($scope.minutes === 1) ? '' : 's';
+	          $scope.hoursS = ($scope.hours === 1) ? '' : 's';
+	          $scope.daysS = ($scope.days === 1)? '' : 's';
+	          $scope.monthsS = ($scope.months === 1)? '' : 's';
+	          $scope.yearsS = ($scope.years === 1)? '' : 's';
+	
+	
+	          // new plural-singular unit decision functions (for custom units and multilingual support)
+	          $scope.secondUnit = timeUnits.seconds;
+	          $scope.minuteUnit = timeUnits.minutes;
+	          $scope.hourUnit = timeUnits.hours;
+	          $scope.dayUnit = timeUnits.days;
+	          $scope.monthUnit = timeUnits.months;
+	          $scope.yearUnit = timeUnits.years;
+	
+	          //add leading zero if number is smaller than 10
+	          $scope.sseconds = $scope.seconds < 10 ? '0' + $scope.seconds : $scope.seconds;
+	          $scope.mminutes = $scope.minutes < 10 ? '0' + $scope.minutes : $scope.minutes;
+	          $scope.hhours = $scope.hours < 10 ? '0' + $scope.hours : $scope.hours;
+	          $scope.ddays = $scope.days < 10 ? '0' + $scope.days : $scope.days;
+	          $scope.mmonths = $scope.months < 10 ? '0' + $scope.months : $scope.months;
+	          $scope.yyears = $scope.years < 10 ? '0' + $scope.years : $scope.years;
+	
+	        }
+	
+	        //determine initial values of time units and add AddSeconds functionality
+	        if ($scope.countdownattr) {
+	          $scope.millis = $scope.countdownattr * 1000;
+	
+	          $scope.addCDSeconds = $element[0].addCDSeconds = function (extraSeconds) {
+	            $scope.countdown += extraSeconds;
+	            $scope.$digest();
+	            if (!$scope.isRunning) {
+	              $scope.start();
+	            }
+	          };
+	
+	          $scope.$on('timer-add-cd-seconds', function (e, extraSeconds) {
+	            $timeout(function () {
+	              $scope.addCDSeconds(extraSeconds);
+	            });
+	          });
+	
+	          $scope.$on('timer-set-countdown-seconds', function (e, countdownSeconds) {
+	            if (!$scope.isRunning) {
+	              $scope.clear();
+	            }
+	
+	            $scope.countdown = countdownSeconds;
+	            $scope.millis = countdownSeconds * 1000;
+	            calculateTimeUnits();
+	          });
+	        } else {
+	          $scope.millis = 0;
+	        }
+	        calculateTimeUnits();
+	
+	        var tick = function tick() {
+	          var typeTimer = null; // countdown or endTimeAttr
+	          $scope.millis = moment().diff($scope.startTime);
+	          var adjustment = $scope.millis % 1000;
+	
+	          if ($scope.endTimeAttr) {
+	            typeTimer = $scope.endTimeAttr;
+	            $scope.millis = moment($scope.endTime).diff(moment());
+	            adjustment = $scope.interval - $scope.millis % 1000;
+	          }
+	
+	          if ($scope.countdownattr) {
+	            typeTimer = $scope.countdownattr;
+	            $scope.millis = $scope.countdown * 1000;
+	          }
+	
+	          if ($scope.millis < 0) {
+	            $scope.stop();
+	            $scope.millis = 0;
+	            calculateTimeUnits();
+	            if($scope.finishCallback) {
+	              $scope.$eval($scope.finishCallback);
+	            }
+	            return;
+	          }
+	          calculateTimeUnits();
+	
+	          //We are not using $timeout for a reason. Please read here - https://github.com/siddii/angular-timer/pull/5
+	          $scope.timeoutId = setTimeout(function () {
+	            tick();
+	            $scope.$digest();
+	          }, $scope.interval - adjustment);
+	
+	          $scope.$emit('timer-tick', {timeoutId: $scope.timeoutId, millis: $scope.millis});
+	
+	          if ($scope.countdown > 0) {
+	            $scope.countdown--;
+	          }
+	          else if ($scope.countdown <= 0) {
+	            $scope.stop();
+	            if($scope.finishCallback) {
+	              $scope.$eval($scope.finishCallback);
+	            }
+	          }
+	
+	          if(typeTimer !== null){
+	            //calculate progress bar
+	            $scope.progressBar = progressBarService.calculateProgressBar($scope.startTime, $scope.millis, $scope.endTime, $scope.countdownattr);
+	
+	            if($scope.progressBar === 100){
+	              $scope.displayProgressActive = ''; //No more Bootstrap active effect
+	            }
+	          }
+	        };
+	
+	        if ($scope.autoStart === undefined || $scope.autoStart === true) {
+	          $scope.start();
+	        }
+	      }]
+	    };
+	    }]);
+	
+	/* commonjs package manager support (eg componentjs) */
+	if (typeof module !== "undefined" && typeof exports !== "undefined" && module.exports === exports){
+	  module.exports = timerModule;
+	}
+	
+	var app = angular.module('timer');
+	
+	app.factory('I18nService', function() {
+	
+	    var I18nService = function() {};
+	
+	    I18nService.prototype.language = 'en';
+	    I18nService.prototype.fallback = 'en';
+	    I18nService.prototype.timeHumanizer = {};
+	
+	    I18nService.prototype.init = function init(lang, fallback) {
+	        var supported_languages = humanizeDuration.getSupportedLanguages();
+	
+	        this.fallback = (fallback !== undefined) ? fallback : 'en';
+	        if (supported_languages.indexOf(fallback) === -1) {
+	            this.fallback = 'en';
+	        }
+	
+	        this.language = lang;
+	        if (supported_languages.indexOf(lang) === -1) {
+	            this.language = this.fallback;
+	        }
+	
+	        //moment init
+	        moment.locale(this.language); //@TODO maybe to remove, it should be handle by the user's application itself, and not inside the directive
+	
+	        //human duration init, using it because momentjs does not allow accurate time (
+	        // momentJS: a few moment ago, human duration : 4 seconds ago
+	        this.timeHumanizer = humanizeDuration.humanizer({
+	            language: this.language,
+	            halfUnit:false
+	        });
+	    };
+	
+	    /**
+	     * get time with units from momentJS i18n
+	     * @param {int} millis
+	     * @returns {{millis: string, seconds: string, minutes: string, hours: string, days: string, months: string, years: string}}
+	     */
+	    I18nService.prototype.getTimeUnits = function getTimeUnits(millis) {
+	        var diffFromAlarm = Math.round(millis/1000) * 1000; //time in milliseconds, get rid of the last 3 ms value to avoid 2.12 seconds display
+	
+	        var time = {};
+	
+	        if (typeof this.timeHumanizer != 'undefined'){
+	            time = {
+	                'millis' : this.timeHumanizer(diffFromAlarm, { units: ["milliseconds"] }),
+	                'seconds' : this.timeHumanizer(diffFromAlarm, { units: ["seconds"] }),
+	                'minutes' : this.timeHumanizer(diffFromAlarm, { units: ["minutes", "seconds"] }) ,
+	                'hours' : this.timeHumanizer(diffFromAlarm, { units: ["hours", "minutes", "seconds"] }) ,
+	                'days' : this.timeHumanizer(diffFromAlarm, { units: ["days", "hours", "minutes", "seconds"] }) ,
+	                'months' : this.timeHumanizer(diffFromAlarm, { units: ["months", "days", "hours", "minutes", "seconds"] }) ,
+	                'years' : this.timeHumanizer(diffFromAlarm, { units: ["years", "months", "days", "hours", "minutes", "seconds"] })
+	            };
+	        }
+	        else {
+	            console.error('i18nService has not been initialized. You must call i18nService.init("en") for example');
+	        }
+	
+	        return time;
+	    };
+	
+	    return I18nService;
+	});
+	
+	var app = angular.module('timer');
+	
+	app.factory('progressBarService', function() {
+	
+	  var ProgressBarService = function() {};
+	
+	  /**
+	   * calculate the remaining time in a progress bar in percentage
+	   * @param {momentjs} startValue in seconds
+	   * @param {integer} currentCountdown, where are we in the countdown
+	   * @param {integer} remainingTime, remaining milliseconds
+	   * @param {integer} endTime, end time, can be undefined
+	   * @param {integer} coutdown, original coutdown value, can be undefined
+	   *
+	   * joke : https://www.youtube.com/watch?v=gENVB6tjq_M
+	   * @return {float} 0 --> 100
+	   */
+	  ProgressBarService.prototype.calculateProgressBar = function calculateProgressBar(startValue, remainingTime, endTimeAttr, coutdown) {
+	    var displayProgressBar = 0,
+	      endTimeValue,
+	      initialCountdown;
+	
+	    remainingTime = remainingTime / 1000; //seconds
+	
+	
+	    if(endTimeAttr !== null){
+	      endTimeValue = moment(endTimeAttr);
+	      initialCountdown = endTimeValue.diff(startValue, 'seconds');
+	      displayProgressBar = remainingTime * 100 / initialCountdown;
+	    }
+	    else {
+	      displayProgressBar = remainingTime * 100 / coutdown;
+	    }
+	
+	    displayProgressBar = 100 - displayProgressBar; //To have 0 to 100 and not 100 to 0
+	    displayProgressBar = Math.round(displayProgressBar * 10) / 10; //learn more why : http://stackoverflow.com/questions/588004/is-floating-point-math-broken
+	
+	    if(displayProgressBar > 100){ //security
+	      displayProgressBar = 100;
+	    }
+	
+	    return displayProgressBar;
+	  };
+	
+	  return new ProgressBarService();
+	});
+
+
+/***/ },
+/* 8 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_RESULT__;// HumanizeDuration.js - http://git.io/j0HgmQ
+	
+	;(function () {
+	  var languages = {
+	    ar: {
+	      y: function (c) { return c === 1 ? 'سنة' : 'سنوات' },
+	      mo: function (c) { return c === 1 ? 'شهر' : 'أشهر' },
+	      w: function (c) { return c === 1 ? 'أسبوع' : 'أسابيع' },
+	      d: function (c) { return c === 1 ? 'يوم' : 'أيام' },
+	      h: function (c) { return c === 1 ? 'ساعة' : 'ساعات' },
+	      m: function (c) { return c === 1 ? 'دقيقة' : 'دقائق' },
+	      s: function (c) { return c === 1 ? 'ثانية' : 'ثواني' },
+	      ms: function (c) { return c === 1 ? 'جزء من الثانية' : 'أجزاء من الثانية' },
+	      decimal: ','
+	    },
+	    ca: {
+	      y: function (c) { return 'any' + (c !== 1 ? 's' : '') },
+	      mo: function (c) { return 'mes' + (c !== 1 ? 'os' : '') },
+	      w: function (c) { return 'setman' + (c !== 1 ? 'es' : 'a') },
+	      d: function (c) { return 'di' + (c !== 1 ? 'es' : 'a') },
+	      h: function (c) { return 'hor' + (c !== 1 ? 'es' : 'a') },
+	      m: function (c) { return 'minut' + (c !== 1 ? 's' : '') },
+	      s: function (c) { return 'segon' + (c !== 1 ? 's' : '') },
+	      ms: function (c) { return 'milisegon' + (c !== 1 ? 's' : '') },
+	      decimal: ','
+	    },
+	    cs: {
+	      y: function (c) { return ['rok', 'roku', 'roky', 'let'][getCzechForm(c)] },
+	      mo: function (c) { return ['měsíc', 'měsíce', 'měsíce', 'měsíců'][getCzechForm(c)] },
+	      w: function (c) { return ['týden', 'týdne', 'týdny', 'týdnů'][getCzechForm(c)] },
+	      d: function (c) { return ['den', 'dne', 'dny', 'dní'][getCzechForm(c)] },
+	      h: function (c) { return ['hodina', 'hodiny', 'hodiny', 'hodin'][getCzechForm(c)] },
+	      m: function (c) { return ['minuta', 'minuty', 'minuty', 'minut'][getCzechForm(c)] },
+	      s: function (c) { return ['sekunda', 'sekundy', 'sekundy', 'sekund'][getCzechForm(c)] },
+	      ms: function (c) { return ['milisekunda', 'milisekundy', 'milisekundy', 'milisekund'][getCzechForm(c)] },
+	      decimal: ','
+	    },
+	    da: {
+	      y: 'år',
+	      mo: function (c) { return 'måned' + (c !== 1 ? 'er' : '') },
+	      w: function (c) { return 'uge' + (c !== 1 ? 'r' : '') },
+	      d: function (c) { return 'dag' + (c !== 1 ? 'e' : '') },
+	      h: function (c) { return 'time' + (c !== 1 ? 'r' : '') },
+	      m: function (c) { return 'minut' + (c !== 1 ? 'ter' : '') },
+	      s: function (c) { return 'sekund' + (c !== 1 ? 'er' : '') },
+	      ms: function (c) { return 'millisekund' + (c !== 1 ? 'er' : '') },
+	      decimal: ','
+	    },
+	    de: {
+	      y: function (c) { return 'Jahr' + (c !== 1 ? 'e' : '') },
+	      mo: function (c) { return 'Monat' + (c !== 1 ? 'e' : '') },
+	      w: function (c) { return 'Woche' + (c !== 1 ? 'n' : '') },
+	      d: function (c) { return 'Tag' + (c !== 1 ? 'e' : '') },
+	      h: function (c) { return 'Stunde' + (c !== 1 ? 'n' : '') },
+	      m: function (c) { return 'Minute' + (c !== 1 ? 'n' : '') },
+	      s: function (c) { return 'Sekunde' + (c !== 1 ? 'n' : '') },
+	      ms: function (c) { return 'Millisekunde' + (c !== 1 ? 'n' : '') },
+	      decimal: ','
+	    },
+	    en: {
+	      y: function (c) { return 'year' + (c !== 1 ? 's' : '') },
+	      mo: function (c) { return 'month' + (c !== 1 ? 's' : '') },
+	      w: function (c) { return 'week' + (c !== 1 ? 's' : '') },
+	      d: function (c) { return 'day' + (c !== 1 ? 's' : '') },
+	      h: function (c) { return 'hour' + (c !== 1 ? 's' : '') },
+	      m: function (c) { return 'minute' + (c !== 1 ? 's' : '') },
+	      s: function (c) { return 'second' + (c !== 1 ? 's' : '') },
+	      ms: function (c) { return 'millisecond' + (c !== 1 ? 's' : '') },
+	      decimal: '.'
+	    },
+	    es: {
+	      y: function (c) { return 'año' + (c !== 1 ? 's' : '') },
+	      mo: function (c) { return 'mes' + (c !== 1 ? 'es' : '') },
+	      w: function (c) { return 'semana' + (c !== 1 ? 's' : '') },
+	      d: function (c) { return 'día' + (c !== 1 ? 's' : '') },
+	      h: function (c) { return 'hora' + (c !== 1 ? 's' : '') },
+	      m: function (c) { return 'minuto' + (c !== 1 ? 's' : '') },
+	      s: function (c) { return 'segundo' + (c !== 1 ? 's' : '') },
+	      ms: function (c) { return 'milisegundo' + (c !== 1 ? 's' : '') },
+	      decimal: ','
+	    },
+	    fi: {
+	      y: function (c) { return c === 1 ? 'vuosi' : 'vuotta' },
+	      mo: function (c) { return c === 1 ? 'kuukausi' : 'kuukautta' },
+	      w: function (c) { return 'viikko' + (c !== 1 ? 'a' : '') },
+	      d: function (c) { return 'päivä' + (c !== 1 ? 'ä' : '') },
+	      h: function (c) { return 'tunti' + (c !== 1 ? 'a' : '') },
+	      m: function (c) { return 'minuutti' + (c !== 1 ? 'a' : '') },
+	      s: function (c) { return 'sekunti' + (c !== 1 ? 'a' : '') },
+	      ms: function (c) { return 'millisekunti' + (c !== 1 ? 'a' : '') },
+	      decimal: ','
+	    },
+	    fr: {
+	      y: function (c) { return 'an' + (c !== 1 ? 's' : '') },
+	      mo: 'mois',
+	      w: function (c) { return 'semaine' + (c !== 1 ? 's' : '') },
+	      d: function (c) { return 'jour' + (c !== 1 ? 's' : '') },
+	      h: function (c) { return 'heure' + (c !== 1 ? 's' : '') },
+	      m: function (c) { return 'minute' + (c !== 1 ? 's' : '') },
+	      s: function (c) { return 'seconde' + (c !== 1 ? 's' : '') },
+	      ms: function (c) { return 'milliseconde' + (c !== 1 ? 's' : '') },
+	      decimal: ','
+	    },
+	    gr: {
+	      y: function (c) { return c === 1 ? 'χρόνος' : 'χρόνια' },
+	      mo: function (c) { return c === 1 ? 'μήνας' : 'μήνες' },
+	      w: function (c) { return c === 1 ? 'εβδομάδα' : 'εβδομάδες' },
+	      d: function (c) { return c === 1 ? 'μέρα' : 'μέρες' },
+	      h: function (c) { return c === 1 ? 'ώρα' : 'ώρες' },
+	      m: function (c) { return c === 1 ? 'λεπτό' : 'λεπτά' },
+	      s: function (c) { return c === 1 ? 'δευτερόλεπτο' : 'δευτερόλεπτα' },
+	      ms: function (c) { return c === 1 ? 'χιλιοστό του δευτερολέπτου' : 'χιλιοστά του δευτερολέπτου' },
+	      decimal: ','
+	    },
+	    hu: {
+	      y: 'év',
+	      mo: 'hónap',
+	      w: 'hét',
+	      d: 'nap',
+	      h: 'óra',
+	      m: 'perc',
+	      s: 'másodperc',
+	      ms: 'ezredmásodperc',
+	      decimal: ','
+	    },
+	    id: {
+	      y: 'tahun',
+	      mo: 'bulan',
+	      w: 'minggu',
+	      d: 'hari',
+	      h: 'jam',
+	      m: 'menit',
+	      s: 'detik',
+	      ms: 'milidetik',
+	      decimal: '.'
+	    },
+	    it: {
+	      y: function (c) { return 'ann' + (c !== 1 ? 'i' : 'o') },
+	      mo: function (c) { return 'mes' + (c !== 1 ? 'i' : 'e') },
+	      w: function (c) { return 'settiman' + (c !== 1 ? 'e' : 'a') },
+	      d: function (c) { return 'giorn' + (c !== 1 ? 'i' : 'o') },
+	      h: function (c) { return 'or' + (c !== 1 ? 'e' : 'a') },
+	      m: function (c) { return 'minut' + (c !== 1 ? 'i' : 'o') },
+	      s: function (c) { return 'second' + (c !== 1 ? 'i' : 'o') },
+	      ms: function (c) { return 'millisecond' + (c !== 1 ? 'i' : 'o') },
+	      decimal: ','
+	    },
+	    ja: {
+	      y: '年',
+	      mo: '月',
+	      w: '週',
+	      d: '日',
+	      h: '時間',
+	      m: '分',
+	      s: '秒',
+	      ms: 'ミリ秒',
+	      decimal: '.'
+	    },
+	    ko: {
+	      y: '년',
+	      mo: '개월',
+	      w: '주일',
+	      d: '일',
+	      h: '시간',
+	      m: '분',
+	      s: '초',
+	      ms: '밀리 초',
+	      decimal: '.'
+	    },
+	    lt: {
+	      y: function (c) { return ((c % 10 === 0) || (c % 100 >= 10 && c % 100 <= 20)) ? 'metų' : 'metai' },
+	      mo: function (c) { return ['mėnuo', 'mėnesiai', 'mėnesių'][getLithuanianForm(c)] },
+	      w: function (c) { return ['savaitė', 'savaitės', 'savaičių'][getLithuanianForm(c)] },
+	      d: function (c) { return ['diena', 'dienos', 'dienų'][getLithuanianForm(c)] },
+	      h: function (c) { return ['valanda', 'valandos', 'valandų'][getLithuanianForm(c)] },
+	      m: function (c) { return ['minutė', 'minutės', 'minučių'][getLithuanianForm(c)] },
+	      s: function (c) { return ['sekundė', 'sekundės', 'sekundžių'][getLithuanianForm(c)] },
+	      ms: function (c) { return ['milisekundė', 'milisekundės', 'milisekundžių'][getLithuanianForm(c)] },
+	      decimal: ','
+	    },
+	    ms: {
+	      y: 'tahun',
+	      mo: 'bulan',
+	      w: 'minggu',
+	      d: 'hari',
+	      h: 'jam',
+	      m: 'minit',
+	      s: 'saat',
+	      ms: 'milisaat',
+	      decimal: '.'
+	    },
+	    nl: {
+	      y: 'jaar',
+	      mo: function (c) { return c === 1 ? 'maand' : 'maanden' },
+	      w: function (c) { return c === 1 ? 'week' : 'weken' },
+	      d: function (c) { return c === 1 ? 'dag' : 'dagen' },
+	      h: 'uur',
+	      m: function (c) { return c === 1 ? 'minuut' : 'minuten' },
+	      s: function (c) { return c === 1 ? 'seconde' : 'seconden' },
+	      ms: function (c) { return c === 1 ? 'milliseconde' : 'milliseconden' },
+	      decimal: ','
+	    },
+	    no: {
+	      y: 'år',
+	      mo: function (c) { return 'måned' + (c !== 1 ? 'er' : '') },
+	      w: function (c) { return 'uke' + (c !== 1 ? 'r' : '') },
+	      d: function (c) { return 'dag' + (c !== 1 ? 'er' : '') },
+	      h: function (c) { return 'time' + (c !== 1 ? 'r' : '') },
+	      m: function (c) { return 'minutt' + (c !== 1 ? 'er' : '') },
+	      s: function (c) { return 'sekund' + (c !== 1 ? 'er' : '') },
+	      ms: function (c) { return 'millisekund' + (c !== 1 ? 'er' : '') },
+	      decimal: ','
+	    },
+	    pl: {
+	      y: function (c) { return ['rok', 'roku', 'lata', 'lat'][getPolishForm(c)] },
+	      mo: function (c) { return ['miesiąc', 'miesiąca', 'miesiące', 'miesięcy'][getPolishForm(c)] },
+	      w: function (c) { return ['tydzień', 'tygodnia', 'tygodnie', 'tygodni'][getPolishForm(c)] },
+	      d: function (c) { return ['dzień', 'dnia', 'dni', 'dni'][getPolishForm(c)] },
+	      h: function (c) { return ['godzina', 'godziny', 'godziny', 'godzin'][getPolishForm(c)] },
+	      m: function (c) { return ['minuta', 'minuty', 'minuty', 'minut'][getPolishForm(c)] },
+	      s: function (c) { return ['sekunda', 'sekundy', 'sekundy', 'sekund'][getPolishForm(c)] },
+	      ms: function (c) { return ['milisekunda', 'milisekundy', 'milisekundy', 'milisekund'][getPolishForm(c)] },
+	      decimal: ','
+	    },
+	    pt: {
+	      y: function (c) { return 'ano' + (c !== 1 ? 's' : '') },
+	      mo: function (c) { return c !== 1 ? 'meses' : 'mês' },
+	      w: function (c) { return 'semana' + (c !== 1 ? 's' : '') },
+	      d: function (c) { return 'dia' + (c !== 1 ? 's' : '') },
+	      h: function (c) { return 'hora' + (c !== 1 ? 's' : '') },
+	      m: function (c) { return 'minuto' + (c !== 1 ? 's' : '') },
+	      s: function (c) { return 'segundo' + (c !== 1 ? 's' : '') },
+	      ms: function (c) { return 'milissegundo' + (c !== 1 ? 's' : '') },
+	      decimal: ','
+	    },
+	    ru: {
+	      y: function (c) { return ['лет', 'год', 'года'][getSlavicForm(c)] },
+	      mo: function (c) { return ['месяцев', 'месяц', 'месяца'][getSlavicForm(c)] },
+	      w: function (c) { return ['недель', 'неделя', 'недели'][getSlavicForm(c)] },
+	      d: function (c) { return ['дней', 'день', 'дня'][getSlavicForm(c)] },
+	      h: function (c) { return ['часов', 'час', 'часа'][getSlavicForm(c)] },
+	      m: function (c) { return ['минут', 'минута', 'минуты'][getSlavicForm(c)] },
+	      s: function (c) { return ['секунд', 'секунда', 'секунды'][getSlavicForm(c)] },
+	      ms: function (c) { return ['миллисекунд', 'миллисекунда', 'миллисекунды'][getSlavicForm(c)] },
+	      decimal: ','
+	    },
+	    uk: {
+	      y: function (c) { return ['років', 'рік', 'роки'][getSlavicForm(c)] },
+	      mo: function (c) { return ['місяців', 'місяць', 'місяці'][getSlavicForm(c)] },
+	      w: function (c) { return ['неділь', 'неділя', 'неділі'][getSlavicForm(c)] },
+	      d: function (c) { return ['днів', 'день', 'дні'][getSlavicForm(c)] },
+	      h: function (c) { return ['годин', 'година', 'години'][getSlavicForm(c)] },
+	      m: function (c) { return ['хвилин', 'хвилина', 'хвилини'][getSlavicForm(c)] },
+	      s: function (c) { return ['секунд', 'секунда', 'секунди'][getSlavicForm(c)] },
+	      ms: function (c) { return ['мілісекунд', 'мілісекунда', 'мілісекунди'][getSlavicForm(c)] },
+	      decimal: ','
+	    },
+	    sv: {
+	      y: 'år',
+	      mo: function (c) { return 'månad' + (c !== 1 ? 'er' : '') },
+	      w: function (c) { return 'veck' + (c !== 1 ? 'or' : 'a') },
+	      d: function (c) { return 'dag' + (c !== 1 ? 'ar' : '') },
+	      h: function (c) { return 'timm' + (c !== 1 ? 'ar' : 'e') },
+	      m: function (c) { return 'minut' + (c !== 1 ? 'er' : '') },
+	      s: function (c) { return 'sekund' + (c !== 1 ? 'er' : '') },
+	      ms: function (c) { return 'millisekund' + (c !== 1 ? 'er' : '') },
+	      decimal: ','
+	    },
+	    tr: {
+	      y: 'yıl',
+	      mo: 'ay',
+	      w: 'hafta',
+	      d: 'gün',
+	      h: 'saat',
+	      m: 'dakika',
+	      s: 'saniye',
+	      ms: 'milisaniye',
+	      decimal: ','
+	    },
+	    vi: {
+	      y: 'năm',
+	      mo: 'tháng',
+	      w: 'tuần',
+	      d: 'ngày',
+	      h: 'giờ',
+	      m: 'phút',
+	      s: 'giây',
+	      ms: 'mili giây',
+	      decimal: ','
+	    },
+	    zh_CN: {
+	      y: '年',
+	      mo: '个月',
+	      w: '周',
+	      d: '天',
+	      h: '小时',
+	      m: '分钟',
+	      s: '秒',
+	      ms: '毫秒',
+	      decimal: '.'
+	    },
+	    zh_TW: {
+	      y: '年',
+	      mo: '個月',
+	      w: '周',
+	      d: '天',
+	      h: '小時',
+	      m: '分鐘',
+	      s: '秒',
+	      ms: '毫秒',
+	      decimal: '.'
+	    }
+	  }
+	
+	  // You can create a humanizer, which returns a function with default
+	  // parameters.
+	  function humanizer (passedOptions) {
+	    var result = function humanizer (ms, humanizerOptions) {
+	      var options = extend({}, result, humanizerOptions || {})
+	      return doHumanization(ms, options)
+	    }
+	
+	    return extend(result, {
+	      language: 'en',
+	      delimiter: ', ',
+	      spacer: ' ',
+	      conjunction: '',
+	      serialComma: true,
+	      units: ['y', 'mo', 'w', 'd', 'h', 'm', 's'],
+	      languages: {},
+	      round: false,
+	      unitMeasures: {
+	        y: 31557600000,
+	        mo: 2629800000,
+	        w: 604800000,
+	        d: 86400000,
+	        h: 3600000,
+	        m: 60000,
+	        s: 1000,
+	        ms: 1
+	      }
+	    }, passedOptions)
+	  }
+	
+	  // The main function is just a wrapper around a default humanizer.
+	  var humanizeDuration = humanizer({})
+	
+	  // doHumanization does the bulk of the work.
+	  function doHumanization (ms, options) {
+	    var i, len, piece
+	
+	    // Make sure we have a positive number.
+	    // Has the nice sideffect of turning Number objects into primitives.
+	    ms = Math.abs(ms)
+	
+	    var dictionary = options.languages[options.language] || languages[options.language]
+	    if (!dictionary) {
+	      throw new Error('No language ' + dictionary + '.')
+	    }
+	
+	    var pieces = []
+	
+	    // Start at the top and keep removing units, bit by bit.
+	    var unitName, unitMS, unitCount
+	    for (i = 0, len = options.units.length; i < len; i++) {
+	      unitName = options.units[i]
+	      unitMS = options.unitMeasures[unitName]
+	
+	      // What's the number of full units we can fit?
+	      if (i + 1 === len) {
+	        unitCount = ms / unitMS
+	      } else {
+	        unitCount = Math.floor(ms / unitMS)
+	      }
+	
+	      // Add the string.
+	      pieces.push({
+	        unitCount: unitCount,
+	        unitName: unitName
+	      })
+	
+	      // Remove what we just figured out.
+	      ms -= unitCount * unitMS
+	    }
+	
+	    var firstOccupiedUnitIndex = 0
+	    for (i = 0; i < pieces.length; i++) {
+	      if (pieces[i].unitCount) {
+	        firstOccupiedUnitIndex = i
+	        break
+	      }
+	    }
+	
+	    if (options.round) {
+	      var ratioToLargerUnit, previousPiece
+	      for (i = pieces.length - 1; i >= 0; i--) {
+	        piece = pieces[i]
+	        piece.unitCount = Math.round(piece.unitCount)
+	
+	        if (i === 0) { break }
+	
+	        previousPiece = pieces[i - 1]
+	
+	        ratioToLargerUnit = options.unitMeasures[previousPiece.unitName] / options.unitMeasures[piece.unitName]
+	        if ((piece.unitCount % ratioToLargerUnit) === 0 || (options.largest && ((options.largest - 1) < (i - firstOccupiedUnitIndex)))) {
+	          previousPiece.unitCount += piece.unitCount / ratioToLargerUnit
+	          piece.unitCount = 0
+	        }
+	      }
+	    }
+	
+	    var result = []
+	    for (i = 0, pieces.length; i < len; i++) {
+	      piece = pieces[i]
+	      if (piece.unitCount) {
+	        result.push(render(piece.unitCount, piece.unitName, dictionary, options))
+	      }
+	
+	      if (result.length === options.largest) { break }
+	    }
+	
+	    if (result.length) {
+	      if (!options.conjunction || result.length === 1) {
+	        return result.join(options.delimiter)
+	      } else if (result.length === 2) {
+	        return result.join(options.conjunction)
+	      } else if (result.length > 2) {
+	        return result.slice(0, -1).join(options.delimiter) + (options.serialComma ? ',' : '') + options.conjunction + result.slice(-1)
+	      }
+	    } else {
+	      return render(0, options.units[options.units.length - 1], dictionary, options)
+	    }
+	  }
+	
+	  function render (count, type, dictionary, options) {
+	    var decimal
+	    if (options.decimal === void 0) {
+	      decimal = dictionary.decimal
+	    } else {
+	      decimal = options.decimal
+	    }
+	
+	    var countStr = count.toString().replace('.', decimal)
+	
+	    var dictionaryValue = dictionary[type]
+	    var word
+	    if (typeof dictionaryValue === 'function') {
+	      word = dictionaryValue(count)
+	    } else {
+	      word = dictionaryValue
+	    }
+	
+	    return countStr + options.spacer + word
+	  }
+	
+	  function extend (destination) {
+	    var source
+	    for (var i = 1; i < arguments.length; i++) {
+	      source = arguments[i]
+	      for (var prop in source) {
+	        if (source.hasOwnProperty(prop)) {
+	          destination[prop] = source[prop]
+	        }
+	      }
+	    }
+	    return destination
+	  }
+	
+	  // Internal helper function for Czech language.
+	  function getCzechForm (c) {
+	    if (c === 1) {
+	      return 0
+	    } else if (Math.floor(c) !== c) {
+	      return 1
+	    } else if (c % 10 >= 2 && c % 10 <= 4 && c % 100 < 10) {
+	      return 2
+	    } else {
+	      return 3
+	    }
+	  }
+	
+	  // Internal helper function for Polish language.
+	  function getPolishForm (c) {
+	    if (c === 1) {
+	      return 0
+	    } else if (Math.floor(c) !== c) {
+	      return 1
+	    } else if (c % 10 >= 2 && c % 10 <= 4 && !(c % 100 > 10 && c % 100 < 20)) {
+	      return 2
+	    } else {
+	      return 3
+	    }
+	  }
+	
+	  // Internal helper function for Russian and Ukranian languages.
+	  function getSlavicForm (c) {
+	    if (Math.floor(c) !== c) {
+	      return 2
+	    } else if ((c % 100 >= 5 && c % 100 <= 20) || (c % 10 >= 5 && c % 10 <= 9) || c % 10 === 0) {
+	      return 0
+	    } else if (c % 10 === 1) {
+	      return 1
+	    } else if (c > 1) {
+	      return 2
+	    } else {
+	      return 0
+	    }
+	  }
+	
+	  // Internal helper function for Lithuanian language.
+	  function getLithuanianForm (c) {
+	    if (c === 1 || (c % 10 === 1 && c % 100 > 20)) {
+	      return 0
+	    } else if (Math.floor(c) !== c || (c % 10 >= 2 && c % 100 > 20) || (c % 10 >= 2 && c % 100 < 10)) {
+	      return 1
+	    } else {
+	      return 2
+	    }
+	  }
+	
+	  humanizeDuration.getSupportedLanguages = function getSupportedLanguages () {
+	    var result = []
+	    for (var language in languages) {
+	      if (languages.hasOwnProperty(language)) {
+	        result.push(language)
+	      }
+	    }
+	    return result
+	  }
+	
+	  humanizeDuration.humanizer = humanizer
+	
+	  if (true) {
+	    !(__WEBPACK_AMD_DEFINE_RESULT__ = function () {
+	      return humanizeDuration
+	    }.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__))
+	  } else if (typeof module !== 'undefined' && module.exports) {
+	    module.exports = humanizeDuration
+	  } else {
+	    this.humanizeDuration = humanizeDuration
+	  }
+	})();  // eslint-disable-line semi
+
+
+/***/ },
+/* 9 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -40601,31 +41617,31 @@
 	
 	var _angular2 = _interopRequireDefault(_angular);
 	
-	var _angularResource = __webpack_require__(8);
+	var _angularResource = __webpack_require__(10);
 	
 	var _angularResource2 = _interopRequireDefault(_angularResource);
 	
-	var _artApi = __webpack_require__(10);
+	var _artApi = __webpack_require__(12);
 	
 	var _artApi2 = _interopRequireDefault(_artApi);
 	
-	var _artPage = __webpack_require__(11);
+	var _artPage = __webpack_require__(13);
 	
 	var _artPage2 = _interopRequireDefault(_artPage);
 	
-	var _artStaging = __webpack_require__(15);
+	var _artStaging = __webpack_require__(17);
 	
 	var _artStaging2 = _interopRequireDefault(_artStaging);
 	
-	var _artSignupInvite = __webpack_require__(18);
+	var _artSignupInvite = __webpack_require__(20);
 	
 	var _artSignupInvite2 = _interopRequireDefault(_artSignupInvite);
 	
-	var _artLevels = __webpack_require__(21);
+	var _artLevels = __webpack_require__(23);
 	
 	var _artLevels2 = _interopRequireDefault(_artLevels);
 	
-	var _artLesson = __webpack_require__(24);
+	var _artLesson = __webpack_require__(26);
 	
 	var _artLesson2 = _interopRequireDefault(_artLesson);
 	
@@ -40638,15 +41654,15 @@
 	exports.default = ArtModule;
 
 /***/ },
-/* 8 */
+/* 10 */
 /***/ function(module, exports, __webpack_require__) {
 
-	__webpack_require__(9);
+	__webpack_require__(11);
 	module.exports = 'ngResource';
 
 
 /***/ },
-/* 9 */
+/* 11 */
 /***/ function(module, exports) {
 
 	/**
@@ -41515,7 +42531,7 @@
 
 
 /***/ },
-/* 10 */
+/* 12 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -41591,7 +42607,7 @@
 	exports.default = artAPIService;
 
 /***/ },
-/* 11 */
+/* 13 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -41600,11 +42616,11 @@
 	    value: true
 	});
 	
-	var _artPage = __webpack_require__(12);
+	var _artPage = __webpack_require__(14);
 	
 	var _artPage2 = _interopRequireDefault(_artPage);
 	
-	var _artPage3 = __webpack_require__(13);
+	var _artPage3 = __webpack_require__(15);
 	
 	var _artPage4 = _interopRequireDefault(_artPage3);
 	
@@ -41619,13 +42635,13 @@
 	exports.default = artPageComponent;
 
 /***/ },
-/* 12 */
+/* 14 */
 /***/ function(module, exports) {
 
-	module.exports = "<div>\n\n    <h2>Famous Western Paintings</h2>\n    <div class=\"painting\">\n        \n        <div class=\"image-covered\">\n        \n            <div class=\"tile-cover\">\n                <div class=\"row\">\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : apeCtrl.startFade1 }\"></span>\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : apeCtrl.startFade2 }\"></span>\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : apeCtrl.startFade3 }\"></span>\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : apeCtrl.startFade4 }\"></span>\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : apeCtrl.startFade5 }\"></span>\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : apeCtrl.startFade6 }\"></span>\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : apeCtrl.startFade7 }\"></span>\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : apeCtrl.startFade8 }\"></span>\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : apeCtrl.startFade9 }\"></span>\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : apeCtrl.startFade10 }\"></span>\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : apeCtrl.startFade11 }\"></span>\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : apeCtrl.startFade12 }\"></span>                    \n                </div>\n                <div class=\"row\">\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : apeCtrl.startFade13 }\"></span>\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : apeCtrl.startFade14 }\"></span>\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : apeCtrl.startFade15 }\"></span>\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : apeCtrl.startFade16 }\"></span>\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : apeCtrl.startFade17 }\"></span>\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : apeCtrl.startFade18 }\"></span>\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : apeCtrl.startFade19 }\"></span>\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : apeCtrl.startFade20 }\"></span>\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : apeCtrl.startFade21 }\"></span>\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : apeCtrl.startFade22 }\"></span>\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : apeCtrl.startFade23 }\"></span>\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : apeCtrl.startFade24 }\"></span>                    \n                </div>\n                <div class=\"row\">\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : apeCtrl.startFade25 }\"></span>\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : apeCtrl.startFade26 }\"></span>\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : apeCtrl.startFade27 }\"></span>\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : apeCtrl.startFade28 }\"></span>\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : apeCtrl.startFade29 }\"></span>\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : apeCtrl.startFade30 }\"></span>\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : apeCtrl.startFade31 }\"></span>\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : apeCtrl.startFade32 }\"></span>\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : apeCtrl.startFade33 }\"></span>\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : apeCtrl.startFade34 }\"></span>\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : apeCtrl.startFade35 }\"></span>\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : apeCtrl.startFade36 }\"></span>                    \n                </div>\n                <div class=\"row\">\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : apeCtrl.startFade37 }\"></span>\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : apeCtrl.startFade38 }\"></span>\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : apeCtrl.startFade39 }\"></span>\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : apeCtrl.startFade40 }\"></span>\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : apeCtrl.startFade41 }\"></span>\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : apeCtrl.startFade42 }\"></span>\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : apeCtrl.startFade43 }\"></span>\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : apeCtrl.startFade44 }\"></span>\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : apeCtrl.startFade45 }\"></span>\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : apeCtrl.startFade46 }\"></span>\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : apeCtrl.startFade47 }\"></span>\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : apeCtrl.startFade48 }\"></span>                    \n                </div>\n            </div>\n            \n            <img ng-src=\"{{ apeCtrl.randomPainting.image }}\" alt=\"\">\n\n        </div>\n    \n    </div>\n\n<!--     <timer countdown=\"30\" interval=\"1000\">\n        <div class=\"progress progress-striped active {{displayProgressActive}}\"style=\"height: 30px;\"> \n            Remaining time : {{countdown}} second{{secondsS}} ({{progressBar}}%). Activity? {{displayProgressActive}} \n            <div class=\"bar\" style=\"min-width: 2em;width: {{progressBar}}%;\"></div> \n        </div>\n    </timer>\n    <timer end-time=\"1451628000000\" interval=\"1000\">\n        <div class=\"progress progress-striped active {{displayProgressActive}}\"style=\"height: 30px;\"> \n            <div class=\"bar\" style=\"min-width: 2em;width: {{progressBar}}%;\"></div> \n        </div>\n    </timer>\n -->\n\n     <div class='who-painted-prompt'>\n        <h3>\n            Who painted this?\n        </h3>\n        <i \n            ng-class=\"{\n                'wrong-x' : apeCtrl.incorrectAnswer,\n                'fa fa-times' : apeCtrl.incorrectAnswer,\n            }\" \n            aria-hidden=\"true\"\n        ></i>\n        <i \n            ng-class=\"{\n                'wrong-x' : !apeCtrl.answeredInTime,\n                'fa fa-clock-o' : !apeCtrl.answeredInTime,\n            }\"\n            aria-hidden='true'\n        ></i>\n    </div>\n\n    <div class='row'>\n            \n        <span \n            class='answer-list' \n            ng-repeat='artist in apeCtrl.answerList'\n        >\n        \n            <div class='col-md-3 col-xs-6'>\n                \n                <!-- Modal Call -->\n                <button\n                    class = \"answer-button btn-block\"\n                    ng-class=\"{\n                        'correct-answer' : artist.correct, \n                        'wrong-answer' : artist.incorrect\n                    }\"\n                    type='checkbox'\n                    name='artist.name'\n                    id='{{ artist.name }}'\n                    ng-value='artist.name'\n                    ng-click='apeCtrl.userChoice(artist)'\n                    data-target='#modalCorrectAnswer'\n                    data-toggle='modal'\n                >\n                    {{ artist.name }}\n                </button>\n                \n                \n                <!-- Modal -->\n                <div\n                    class='modal fade'\n                    id='{{ apeCtrl.modalID }}'\n                    tabindex='-1'\n                    role='dialog'\n                    aria-labelledby='{{ apeCtrl.modalID }}'\n                    data-backdrop=''\n                >\n                    <div class=\"modal-dialog modal-lg\" role=\"document\">\n                        <div class=\"modal-content\">\n                            \n                            <div class=\"modal-header\">\n  \n                                <h4 class=\"modal-title\" id=\"{{ apeCtrl.modalID }}\">{{ apeCtrl.randomPainting.title }}</h4>\n                                <div>by</div>\n                                <h4 class=\"modal-title\" id=\"{{ apeCtrl.modalID }}\">{{ apeCtrl.randomPainting.artist.name }}</h4>\n                            </div>\n\n\n                            <div class=\"modal-body\">\n                               <div class=\"row\"> \n                                    <div class=\"col-md-6\">\n                                        <div class=\"modal-painting\">\n                                            \n                                            <img ng-src=\"{{ apeCtrl.randomPainting.image }}\" alt=\"\">\n                        \n                                            <div class=\"wrong-right-icons\">\n                                                <i \n                                                    ng-class=\"{\n                                                        'wrong-x' : !apeCtrl.correctFirstTime,\n                                                        'fa fa-times' : !apeCtrl.correctFirstTime,\n                                                        'correct-check' : apeCtrl.correctFirstTime,\n                                                        'fa fa-check' : apeCtrl.correctFirstTime, \n                                                    }\" \n                                                    aria-hidden=\"true\"\n                                                ></i>\n                                                <i \n                                                    class='fa fa-clock-o'\n                                                    ng-class=\"{\n                                                        'wrong-x' : !apeCtrl.answeredInTime,\n                                                        'correct-check' : apeCtrl.answeredInTime,\n                                                    }\" \n                                                    aria-hidden=\"true\"\n                                                ></i>\n                                            </div>\n                                            \n                                        </div>                                        \n                                    </div>\n                                    <div class=\"col-md-6\">\n                                        <div class='modal-description'>\n                                            {{ apeCtrl.randomPainting.description }}\n                                        </div>                                        \n                                    </div>\n                                </div>                                \n                            </div>\n\n                            <div class=\"modal-footer\">\n                                \n                                <button \n                                    type=\"button\" \n                                    class=\"btn close btn-info\" \n                                    data-dismiss=\"modal\"\n                                    ng-click='apeCtrl.nextQuestion()'\n                                >\n                                    Next Painting\n                                </button>\n\n                            </div>\n                        </div>\n                    </div>\n                </div>\n                <!-- end Modal -->\n\n            </div><!-- end col -->\n        \n        </span><!-- end ng-repeat -->\n\n    </div><!-- end row -->\n            \n</div>\n"
+	module.exports = "<div>\n\n    <h2>Famous Western Paintings</h2>\n    <div class=\"painting\">\n        \n        <div class=\"image-covered\">\n        \n            <div class=\"tile-cover\">\n                <div class=\"row\">\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : apeCtrl.startFade1 }\"></span>\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : apeCtrl.startFade2 }\"></span>\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : apeCtrl.startFade3 }\"></span>\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : apeCtrl.startFade4 }\"></span>\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : apeCtrl.startFade5 }\"></span>\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : apeCtrl.startFade6 }\"></span>\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : apeCtrl.startFade7 }\"></span>\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : apeCtrl.startFade8 }\"></span>\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : apeCtrl.startFade9 }\"></span>\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : apeCtrl.startFade10 }\"></span>\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : apeCtrl.startFade11 }\"></span>\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : apeCtrl.startFade12 }\"></span>                    \n                </div>\n                <div class=\"row\">\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : apeCtrl.startFade13 }\"></span>\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : apeCtrl.startFade14 }\"></span>\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : apeCtrl.startFade15 }\"></span>\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : apeCtrl.startFade16 }\"></span>\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : apeCtrl.startFade17 }\"></span>\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : apeCtrl.startFade18 }\"></span>\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : apeCtrl.startFade19 }\"></span>\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : apeCtrl.startFade20 }\"></span>\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : apeCtrl.startFade21 }\"></span>\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : apeCtrl.startFade22 }\"></span>\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : apeCtrl.startFade23 }\"></span>\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : apeCtrl.startFade24 }\"></span>                    \n                </div>\n                <div class=\"row\">\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : apeCtrl.startFade25 }\"></span>\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : apeCtrl.startFade26 }\"></span>\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : apeCtrl.startFade27 }\"></span>\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : apeCtrl.startFade28 }\"></span>\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : apeCtrl.startFade29 }\"></span>\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : apeCtrl.startFade30 }\"></span>\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : apeCtrl.startFade31 }\"></span>\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : apeCtrl.startFade32 }\"></span>\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : apeCtrl.startFade33 }\"></span>\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : apeCtrl.startFade34 }\"></span>\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : apeCtrl.startFade35 }\"></span>\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : apeCtrl.startFade36 }\"></span>                    \n                </div>\n                <div class=\"row\">\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : apeCtrl.startFade37 }\"></span>\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : apeCtrl.startFade38 }\"></span>\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : apeCtrl.startFade39 }\"></span>\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : apeCtrl.startFade40 }\"></span>\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : apeCtrl.startFade41 }\"></span>\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : apeCtrl.startFade42 }\"></span>\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : apeCtrl.startFade43 }\"></span>\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : apeCtrl.startFade44 }\"></span>\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : apeCtrl.startFade45 }\"></span>\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : apeCtrl.startFade46 }\"></span>\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : apeCtrl.startFade47 }\"></span>\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : apeCtrl.startFade48 }\"></span>                    \n                </div>\n            </div>\n            \n            <img ng-src=\"{{ apeCtrl.randomPainting.image }}\" alt=\"\">\n\n        </div>\n    \n    </div>\n\n\n\n        <div class=\"bs-docs-example\">\n            <p>\n                This simple directive <code>&lt;timer /&gt;</code> will start the timer with the default option of\n                ticking every 1 millisecond</p>\n\n            <h3>\n                <timer></timer>\n            </h3>\n            <button class=\"btn\" onclick=\"startTimer('basic-timer')\" type=\"button\">Start</button>\n            <button class=\"btn\" onclick=\"stopTimer('basic-timer')\" type=\"button\">Stop</button>\n        </div>\n\n\n   \n\n     <div class='who-painted-prompt'>\n        <h3>\n            Who painted this?\n        </h3>\n        <i \n            ng-class=\"{\n                'wrong-x' : apeCtrl.incorrectAnswer,\n                'fa fa-times' : apeCtrl.incorrectAnswer,\n            }\" \n            aria-hidden=\"true\"\n        ></i>\n        <i \n            ng-class=\"{\n                'wrong-x' : !apeCtrl.answeredInTime,\n                'fa fa-clock-o' : !apeCtrl.answeredInTime,\n            }\"\n            aria-hidden='true'\n        ></i>\n    </div>\n\n    <div class='row'>\n            \n        <span \n            class='answer-list' \n            ng-repeat='artist in apeCtrl.answerList'\n        >\n        \n            <div class='col-md-3 col-xs-6'>\n                \n                <!-- Modal Call -->\n                <button\n                    class = \"answer-button btn-block\"\n                    ng-class=\"{\n                        'correct-answer' : artist.correct, \n                        'wrong-answer' : artist.incorrect\n                    }\"\n                    type='checkbox'\n                    name='artist.name'\n                    id='{{ artist.name }}'\n                    ng-value='artist.name'\n                    ng-click='apeCtrl.userChoice(artist)'\n                    data-target='#modalCorrectAnswer'\n                    data-toggle='modal'\n                >\n                    {{ artist.name }}\n                </button>\n                \n                \n                <!-- Modal -->\n                <div\n                    class='modal fade'\n                    id='{{ apeCtrl.modalID }}'\n                    tabindex='-1'\n                    role='dialog'\n                    aria-labelledby='{{ apeCtrl.modalID }}'\n                    data-backdrop=''\n                >\n                    <div class=\"modal-dialog modal-lg\" role=\"document\">\n                        <div class=\"modal-content\">\n                            \n                            <div class=\"modal-header\">\n  \n                                <h4 class=\"modal-title\" id=\"{{ apeCtrl.modalID }}\">{{ apeCtrl.randomPainting.title }}</h4>\n                                <div>by</div>\n                                <h4 class=\"modal-title\" id=\"{{ apeCtrl.modalID }}\">{{ apeCtrl.randomPainting.artist.name }}</h4>\n                            </div>\n\n\n                            <div class=\"modal-body\">\n                               <div class=\"row\"> \n                                    <div class=\"col-md-6\">\n                                        <div class=\"modal-painting\">\n                                            \n                                            <img ng-src=\"{{ apeCtrl.randomPainting.image }}\" alt=\"\">\n                        \n                                            <div class=\"wrong-right-icons\">\n                                                <i \n                                                    ng-class=\"{\n                                                        'wrong-x' : !apeCtrl.correctFirstTime,\n                                                        'fa fa-times' : !apeCtrl.correctFirstTime,\n                                                        'correct-check' : apeCtrl.correctFirstTime,\n                                                        'fa fa-check' : apeCtrl.correctFirstTime, \n                                                    }\" \n                                                    aria-hidden=\"true\"\n                                                ></i>\n                                                <i \n                                                    class='fa fa-clock-o'\n                                                    ng-class=\"{\n                                                        'wrong-x' : !apeCtrl.answeredInTime,\n                                                        'correct-check' : apeCtrl.answeredInTime,\n                                                    }\" \n                                                    aria-hidden=\"true\"\n                                                ></i>\n                                            </div>\n                                            \n                                        </div>                                        \n                                    </div>\n                                    <div class=\"col-md-6\">\n                                        <div class='modal-description'>\n                                            {{ apeCtrl.randomPainting.description }}\n                                        </div>                                        \n                                    </div>\n                                </div>                                \n                            </div>\n\n                            <div class=\"modal-footer\">\n                                \n                                <button \n                                    type=\"button\" \n                                    class=\"btn close btn-info\" \n                                    data-dismiss=\"modal\"\n                                    ng-click='apeCtrl.nextQuestion()'\n                                >\n                                    Next Painting\n                                </button>\n\n                            </div>\n                        </div>\n                    </div>\n                </div>\n                <!-- end Modal -->\n\n            </div><!-- end col -->\n        \n        </span><!-- end ng-repeat -->\n\n    </div><!-- end row -->\n            \n</div>\n"
 
 /***/ },
-/* 13 */
+/* 15 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -41634,10 +42650,13 @@
 	    value: true
 	});
 	
-	var _ramda = __webpack_require__(14);
+	var _ramda = __webpack_require__(16);
+	
+	// import timer from 'angular-timer';
 	
 	function ArtPageController(artAPIService, $state, $timeout) {
 	    var ctrl = this;
+	    // ctrl.timer = timer;
 	
 	    // take user choice and determine right/wrong and take appropriate action
 	    ctrl.userChoice = function userChoice(selection) {
@@ -41856,7 +42875,7 @@
 	exports.default = ArtPageController;
 
 /***/ },
-/* 14 */
+/* 16 */
 /***/ function(module, exports, __webpack_require__) {
 
 	//  Ramda v0.22.1
@@ -50693,7 +51712,7 @@
 
 
 /***/ },
-/* 15 */
+/* 17 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -50702,11 +51721,11 @@
 	    value: true
 	});
 	
-	var _artStaging = __webpack_require__(16);
+	var _artStaging = __webpack_require__(18);
 	
 	var _artStaging2 = _interopRequireDefault(_artStaging);
 	
-	var _artStaging3 = __webpack_require__(17);
+	var _artStaging3 = __webpack_require__(19);
 	
 	var _artStaging4 = _interopRequireDefault(_artStaging3);
 	
@@ -50721,13 +51740,13 @@
 	exports.default = artStagingComponent;
 
 /***/ },
-/* 16 */
+/* 18 */
 /***/ function(module, exports) {
 
 	module.exports = "<div>\n\n    <h2>Art Packs</h2>\n    \n    <div>\n        Select an art pack that you would like to learn.\n    </div>\n    \n    <hr>\n\n    <div class=\"row\">\n\n        <div ng-repeat='pack in stageCtrl.artPackArt' >\n            <a ui-sref='artLevels({ artpackId: pack.id})'>  \n              \n                <div class=\"col-sm-4\">\n                    <div class=\"staging-artpacks\">\n\n                        <div class='staging-titles'>\n                            {{ pack.title }}                    \n                        </div>\n\n                        <img ng-src=\"{{ pack.artwork_set[1].image }}\" >\n                        \n                    </div>\n                </div>\n            </a>\n        </div>\n\n    </div>\n\n</div>"
 
 /***/ },
-/* 17 */
+/* 19 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -50769,7 +51788,7 @@
 	exports.default = ArtStagingController;
 
 /***/ },
-/* 18 */
+/* 20 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -50778,11 +51797,11 @@
 	    value: true
 	});
 	
-	var _artSignupInvite = __webpack_require__(19);
+	var _artSignupInvite = __webpack_require__(21);
 	
 	var _artSignupInvite2 = _interopRequireDefault(_artSignupInvite);
 	
-	var _artSignupInvite3 = __webpack_require__(20);
+	var _artSignupInvite3 = __webpack_require__(22);
 	
 	var _artSignupInvite4 = _interopRequireDefault(_artSignupInvite3);
 	
@@ -50797,13 +51816,13 @@
 	exports.default = artSignupInviteComponent;
 
 /***/ },
-/* 19 */
+/* 21 */
 /***/ function(module, exports) {
 
 	module.exports = "\n<div class='sign-up-invite'>\n    <h1>Great work!</h1>\n    <h3>\n        <a href='/accounts/register'>Sign up</a> \n        for more fun and to track your progress. (free)\n    </h3>\n    <h2>\n        <a ui-sref='artPage'>\n            Play again.\n        </a>    \n    </h2>\n</div>\n"
 
 /***/ },
-/* 20 */
+/* 22 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -50818,7 +51837,7 @@
 	exports.default = ArtSignupInviteController;
 
 /***/ },
-/* 21 */
+/* 23 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -50827,11 +51846,11 @@
 	    value: true
 	});
 	
-	var _artLevels = __webpack_require__(22);
+	var _artLevels = __webpack_require__(24);
 	
 	var _artLevels2 = _interopRequireDefault(_artLevels);
 	
-	var _artLevels3 = __webpack_require__(23);
+	var _artLevels3 = __webpack_require__(25);
 	
 	var _artLevels4 = _interopRequireDefault(_artLevels3);
 	
@@ -50846,13 +51865,13 @@
 	exports.default = artLevelsComponent;
 
 /***/ },
-/* 22 */
+/* 24 */
 /***/ function(module, exports) {
 
 	module.exports = "<div>\n\n    <h2>Art Pack Levels</h2>\n\n    <div>\n        Select an art pack level.\n    </div>\n\n    <hr>\n\n    <div class=\"row\">\n\n        <div ng-repeat='level in levelsCtrl.levels' >\n            <a ui-sref='artLesson ({ artpackId: levelsCtrl.artpackId, levelId: level.id })'>            \n                <div class=\"col-sm-3\">\n                    <div class=\"staging-artpacks\">\n\n                        <div>\n                            {{ level.title }}\n                        </div>\n                        \n                    </div>\n                </div>\n            <!-- </a> -->\n        <!-- </div> -->\n\n    </div>\n\n</div>"
 
 /***/ },
-/* 23 */
+/* 25 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -50886,7 +51905,7 @@
 	exports.default = ArtLevelsController;
 
 /***/ },
-/* 24 */
+/* 26 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -50895,11 +51914,11 @@
 	    value: true
 	});
 	
-	var _artLesson = __webpack_require__(25);
+	var _artLesson = __webpack_require__(27);
 	
 	var _artLesson2 = _interopRequireDefault(_artLesson);
 	
-	var _artLesson3 = __webpack_require__(26);
+	var _artLesson3 = __webpack_require__(28);
 	
 	var _artLesson4 = _interopRequireDefault(_artLesson3);
 	
@@ -50914,13 +51933,13 @@
 	exports.default = artLessonComponent;
 
 /***/ },
-/* 25 */
+/* 27 */
 /***/ function(module, exports) {
 
 	module.exports = "<div>\n\n    <h2>Famous Western Paintings</h2>\n    <div class=\"painting\">\n\n        <div class=\"image-covered\">\n        \n            <div class=\"tile-cover\">\n                <div class=\"row\">\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : lessonCtrl.startFade1 }\"></span>\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : lessonCtrl.startFade2 }\"></span>\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : lessonCtrl.startFade3 }\"></span>\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : lessonCtrl.startFade4 }\"></span>\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : lessonCtrl.startFade5 }\"></span>\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : lessonCtrl.startFade6 }\"></span>\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : lessonCtrl.startFade7 }\"></span>\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : lessonCtrl.startFade8 }\"></span>\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : lessonCtrl.startFade9 }\"></span>\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : lessonCtrl.startFade10 }\"></span>\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : lessonCtrl.startFade11 }\"></span>\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : lessonCtrl.startFade12 }\"></span>                    \n                </div>\n                <div class=\"row\">\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : lessonCtrl.startFade13 }\"></span>\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : lessonCtrl.startFade14 }\"></span>\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : lessonCtrl.startFade15 }\"></span>\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : lessonCtrl.startFade16 }\"></span>\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : lessonCtrl.startFade17 }\"></span>\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : lessonCtrl.startFade18 }\"></span>\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : lessonCtrl.startFade19 }\"></span>\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : lessonCtrl.startFade20 }\"></span>\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : lessonCtrl.startFade21 }\"></span>\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : lessonCtrl.startFade22 }\"></span>\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : lessonCtrl.startFade23 }\"></span>\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : lessonCtrl.startFade24 }\"></span>                    \n                </div>\n                <div class=\"row\">\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : lessonCtrl.startFade25 }\"></span>\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : lessonCtrl.startFade26 }\"></span>\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : lessonCtrl.startFade27 }\"></span>\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : lessonCtrl.startFade28 }\"></span>\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : lessonCtrl.startFade29 }\"></span>\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : lessonCtrl.startFade30 }\"></span>\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : lessonCtrl.startFade31 }\"></span>\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : lessonCtrl.startFade32 }\"></span>\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : lessonCtrl.startFade33 }\"></span>\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : lessonCtrl.startFade34 }\"></span>\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : lessonCtrl.startFade35 }\"></span>\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : lessonCtrl.startFade36 }\"></span>                    \n                </div>\n                <div class=\"row\">\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : lessonCtrl.startFade37 }\"></span>\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : lessonCtrl.startFade38 }\"></span>\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : lessonCtrl.startFade39 }\"></span>\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : lessonCtrl.startFade40 }\"></span>\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : lessonCtrl.startFade41 }\"></span>\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : lessonCtrl.startFade42 }\"></span>\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : lessonCtrl.startFade43 }\"></span>\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : lessonCtrl.startFade44 }\"></span>\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : lessonCtrl.startFade45 }\"></span>\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : lessonCtrl.startFade46 }\"></span>\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : lessonCtrl.startFade47 }\"></span>\n                    <span class=\"col-xs-1 tiles\" ng-class=\"{ 'tile-fade' : lessonCtrl.startFade48 }\"></span>                    \n                </div>\n            </div>\n                 \n            <img src=\"{{ lessonCtrl.randomPainting.image }}\" alt=\"\">\n\n        </div>\n\n    </div>\n\n\n    <div class='who-painted-prompt'>\n        <h3>\n            Who painted this?\n        </h3>\n        <i \n            ng-class=\"{\n                'wrong-x' : lessonCtrl.incorrectAnswer,\n                'fa fa-times' : lessonCtrl.incorrectAnswer,\n            }\" \n            aria-hidden=\"true\"\n        ></i>\n        <i \n            ng-class=\"{\n                'wrong-x' : !lessonCtrl.answeredInTime,\n                'fa fa-clock-o' : !lessonCtrl.answeredInTime,\n            }\"\n            aria-hidden='true'\n        ></i>\n    </div>\n\n    <div class='row'>\n            \n        <span \n            class='answer-list' \n            ng-repeat='artist in lessonCtrl.answerList'\n        >\n        \n            <div class='col-md-3 col-xs-6'>\n\n                <!-- Modal Call -->\n                <button\n                    class = \"answer-button btn-block\"\n                    ng-class=\"{\n                        'correct-answer' : artist.correct, \n                        'wrong-answer' : artist.incorrect\n                    }\"\n                    type='checkbox'\n                    name='artist.name'\n                    id='{{ artist.name }}'\n                    ng-value='artist.name'\n                    ng-click='lessonCtrl.userChoice(artist)'\n                    data-target='#modalCorrectAnswer'\n                    data-toggle='modal' \n                >\n                    {{ artist.name }}\n                </button>\n\n\n                <!-- Modal -->\n                <div \n                    class=\"modal fade\" \n                    id=\"{{ lessonCtrl.modalID }}\" \n                    tabindex=\"-1\" \n                    role=\"dialog\" \n                    aria-labelledby=\"{{ lessonCtrl.modalID }}\"\n                    data-backdrop=\"\"\n                >\n                    <div class=\"modal-dialog modal-lg\" role=\"document\">\n                        <div class=\"modal-content\">\n                            \n                            <div class=\"modal-header\">\n                                   \n                                <h4 class=\"modal-title\" id=\"{{ lessonCtrl.modalID }}\">{{ lessonCtrl.randomPainting.title }}</h4>\n                                <div>by</div>\n                                <h4 class=\"modal-title\" id=\"{{ lessonCtrl.modalID }}\">{{ lessonCtrl.randomPainting.artist.name }}</h4>\n                            </div>\n\n\n                            <div class=\"modal-body\">\n                               <div class=\"row\"> \n                                    <div class=\"col-md-6\">\n                                        <div class=\"modal-painting\">\n                                            \n                                            <img ng-src=\"{{ lessonCtrl.randomPainting.image }}\" alt=\"\">\n                                            \n                                            <div class=\"wrong-right-icons\">\n                                                <i \n                                                    ng-class=\"{\n                                                        'wrong-x' : !lessonCtrl.correctFirstTime,\n                                                        'fa fa-times' : !lessonCtrl.correctFirstTime,\n                                                        'correct-check' : lessonCtrl.correctFirstTime,\n                                                        'fa fa-check' : lessonCtrl.correctFirstTime, \n                                                    }\" \n                                                    aria-hidden=\"true\"\n                                                ></i>\n                                                <i \n                                                    class='fa fa-clock-o'\n                                                    ng-class=\"{\n                                                        'wrong-x' : !lessonCtrl.answeredInTime,\n                                                        'correct-check' : lessonCtrl.answeredInTime,\n                                                    }\" \n                                                    aria-hidden=\"true\"\n                                                ></i> \n                                            </div>\n\n                                        </div>                                        \n                                    </div>\n                                    <div class=\"col-md-6\">\n                                        <div class='modal-description'>\n                                            {{ lessonCtrl.randomPainting.description }}\n                                        </div>                                        \n                                    </div>\n                                </div>                                \n                            </div>\n\n                            <div class=\"modal-footer\">\n                                \n                                <button \n                                    type=\"button\" \n                                    class=\"btn close btn-info\" \n                                    data-dismiss=\"modal\"\n                                    ng-click='lessonCtrl.nextQuestion()'\n                                >\n                                    Next Painting\n                                </button>\n\n                            </div>\n                        </div>\n                    </div>\n                </div>\n                <!-- end Modal -->\n\n            </div><!-- end col -->\n\n        </span><!-- end ng-repeat -->\n\n    </div><!-- end row -->\n\n</div>\n"
 
 /***/ },
-/* 26 */
+/* 28 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -50929,7 +51948,7 @@
 	    value: true
 	});
 	
-	var _ramda = __webpack_require__(14);
+	var _ramda = __webpack_require__(16);
 	
 	function ArtLessonController(artAPIService, $stateParams, $state, $timeout) {
 	    var ctrl = this;
@@ -51172,7 +52191,7 @@
 	exports.default = ArtLessonController;
 
 /***/ },
-/* 27 */
+/* 29 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -51181,11 +52200,11 @@
 	    value: true
 	});
 	
-	var _app = __webpack_require__(28);
+	var _app = __webpack_require__(30);
 	
 	var _app2 = _interopRequireDefault(_app);
 	
-	var _app3 = __webpack_require__(29);
+	var _app3 = __webpack_require__(31);
 	
 	var _app4 = _interopRequireDefault(_app3);
 	
@@ -51200,13 +52219,13 @@
 	exports.default = appComponent;
 
 /***/ },
-/* 28 */
+/* 30 */
 /***/ function(module, exports) {
 
 	module.exports = "\n<header>\n    <nav class=\"navbar navbar-default navbar-fixed-top\">\n        \n        <div class=\"container menu\">\n           \n            <div class=\"navbar-header\">\n                \n                <button\n                    type='button'\n                    class='navbar-toggle collapsed'\n                    data-toggle='collapse'\n                    data-target='#navbar-header-collapse'\n                    aria-expanded='false'\n                >\n                    <span class='sr-only'>Toggle navigations.</span>\n                    <span class=\"icon-bar\"></span>\n                    <span class=\"icon-bar\"></span>\n                    <span class=\"icon-bar\"></span>\n                </button>\n                \n                <a ui-sref='artStaging' class='navbar-brand'>\n                    <span>\n                        <i class=\"fa fa-paint-brush\"></i>\n                    </span>\n                    <span class='menu-title'>\n                        Who Painted?\n                    </span>\n                </a>\n\n            </div>\n        \n            <div id='navbar-header-collapse' class=\"collapse navbar-collapse\">\n\n                <div class='\n                    navbar-text \n                    navbar-left \n                    menu-username \n                    menu-links\n                '>\n                    <span ng-show='appCtrl.username'>\n                        Welcome {{ appCtrl.username }}                                            \n                    </span>\n                </div>\n\n                <ul class='nav navbar-nav navbar-right'>\n                        <li ng-show='appCtrl.username'>\n                            <a href='/accounts/logout'>Log Out</a>\n                        </li>\n                        <li ng-show='!appCtrl.username'>\n                            <a href='/accounts/login'>Log In</a>\n                        </li>\n                        <li ng-show='!appCtrl.username'>\n                            <a href='/accounts/register'>Sign Up</a>\n                        </li>\n                </ul>\n\n            </div>\n                \n\n\n        </div>\n\n    </nav>\n</header>\n\n\n<div class=\"container\">\n    <!-- You're looking at client/app/app.html. -->\n\n    <div ui-view></div>\n\n</div>\n\n\n"
 
 /***/ },
-/* 29 */
+/* 31 */
 /***/ function(module, exports) {
 
 	'use strict';

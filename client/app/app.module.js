@@ -1,12 +1,16 @@
 import angular from 'angular';
 import uiRouter from 'angular-ui-router';
 import angularCookies from 'angular-cookies';
+import timer from 'angular-timer';
+import humanizeDuration from 'humanize-duration';
 
 import ArtModule from '../art/art.module';
 import appComponent from './app.component';
 
 
 const AppModule = angular.module('app', [
+    // humanizeDuration.name,
+    timer.name,
     uiRouter,
     angularCookies,
     ArtModule.name,

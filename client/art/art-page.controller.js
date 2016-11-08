@@ -1,7 +1,9 @@
 import { range } from 'ramda';
+// import timer from 'angular-timer';
 
 function ArtPageController(artAPIService, $state, $timeout) {
     const ctrl = this;
+    // ctrl.timer = timer;
 
     // take user choice and determine right/wrong and take appropriate action
     ctrl.userChoice = function userChoice(selection) {

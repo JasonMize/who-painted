@@ -10,5 +10,5 @@ class Command(BaseCommand):
         AWS_SUPERUSER_EMAIL = os.environ['AWS_SUPERUSER_EMAIL']
         AWS_SUPERUSER_PASS = os.environ['AWS_SUPERUSER_PASS']
         User = get_user_model()
-        if not User.objects.filter(username="AWS_SUPERUSER_NAME").exists():
-            User.objects.create_superuser("AWS_SUPERUSER_NAME", "AWS_SUPERUSER_EMAIL", "AWS_SUPERUSER_PASS")
+        if not User.objects.filter(username=AWS_SUPERUSER_NAME).exists():
+            User.objects.create_superuser(AWS_SUPERUSER_NAME, AWS_SUPERUSER_EMAIL, AWS_SUPERUSER_PASS)

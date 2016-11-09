@@ -68,6 +68,11 @@ hr {
     animation-fill-mode: forwards;
 }
 
+.progress {
+    margin: auto;
+    width: 50%;
+}
+
 .who-painted-prompt h3 {
     margin: 0px;
     padding-bottom: 5px;

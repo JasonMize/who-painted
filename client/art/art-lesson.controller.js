@@ -38,6 +38,8 @@ function ArtLessonController(artAPIService, $stateParams, $state, $timeout) {
 
             // eslint-disable-next-line no-param-reassign
             selection.correct = true;
+            // if correct answer exit timer
+            $timeout.cancel(ctrl.stop);
             ctrl.correctAnswer = true;
             ctrl.incorrectAnswer = false;
             ctrl.modalID = 'modalCorrectAnswer';
@@ -54,27 +56,42 @@ function ArtLessonController(artAPIService, $stateParams, $state, $timeout) {
     };
 
 
-    // set variable for random tile to true - triggers ng-class of fade-tile in html
-    function fadeTile() {
-        ctrl[`startFade${ctrl.randomTile}`] = true;
+    // timer until answer is incorrect
+    function answerTimer() {
+        ctrl.stop = $timeout(() => {
+            // decrement remaining seconds
+            ctrl.countDown -= 1;
+
+            // if zero, stop $timeout and make answer incorrect
+            if (ctrl.countDown < 1) {
+                $timeout.cancel(ctrl.stop);
+                ctrl.answeredInTime = false;
+            } else { // count down again
+                answerTimer();
+            }
+        }, 1000); // invoke every 1 second
     }
 
     // pick random tile to fade
     function revealOne() {
-        console.log('tileFade: ', ctrl.tileFade);
         if (ctrl.tileFade === true) {
             ctrl.maxRange = Math.floor(ctrl.tiles.length);
             ctrl.tileIndex = Math.floor(Math.random() * (ctrl.maxRange));
             ctrl.randomTile = ctrl.tiles.splice(ctrl.tileIndex, 1).pop();
 
-            fadeTile();
+            // set variable for random tile to true - triggers ng-class of fade-tile in html
+            ctrl[`startFade${ctrl.randomTile}`] = true;
 
+            // fade all tiles, wait till the last one finishes fading, do stuff
             if (ctrl.tiles.length > 0) {
+                // speed of tile fade
                 $timeout(revealOne, 200);
-            } else {
-                // count answer as incorrect if not provided before the tiles are all revealed
-                $timeout(() => {
-                    ctrl.answeredInTime = false;
+            } else { // count answer as incorrect if not provided before the tiles are all revealed
+                // wait till last tile finishes fading
+                ctrl.end = $timeout(() => {
+                    $timeout.cancel(ctrl.end);
+                    ctrl.showAnswerTimer = true;
+                    answerTimer();
                 }, 1500);
             }
         }
@@ -116,7 +133,7 @@ function ArtLessonController(artAPIService, $stateParams, $state, $timeout) {
             }
         }
 
-        console.log('multipleChoiceList');
+        // console.log('multipleChoiceList');
         // console.log('ctrl.answerList: ', ctrl.answerList);
         revealImage();
     }
@@ -127,7 +144,7 @@ function ArtLessonController(artAPIService, $stateParams, $state, $timeout) {
         ctrl.maxRange = Math.floor(ctrl.artists.length);
         ctrl.artistIndex = Math.floor(Math.random() * (ctrl.maxRange));
 
-        console.log('randomArtist');
+        // console.log('randomArtist');
         // console.log('ctrl.artistIndex: ', ctrl.artistIndex);
     }
 
@@ -149,7 +166,7 @@ function ArtLessonController(artAPIService, $stateParams, $state, $timeout) {
             }
         }
 
-        console.log('wrongAnswers');
+        // console.log('wrongAnswers');
         // console.log('ctrl.wrongAnswers: ', ctrl.wrongAnswers);
         multipleChoiceList();
     }
@@ -160,7 +177,7 @@ function ArtLessonController(artAPIService, $stateParams, $state, $timeout) {
         return artAPIService.artist.get().$promise.then((data) => {
             ctrl.artists = data.results;
 
-            console.log('getArtist');
+            // console.log('getArtist');
             // console.log('ctrl.artists: ', ctrl.artists);
             wrongAnswers();
         });
@@ -174,7 +191,7 @@ function ArtLessonController(artAPIService, $stateParams, $state, $timeout) {
         ctrl.artIndex = Math.floor(Math.random() * (ctrl.maxRange));
         ctrl.randomPainting = ctrl.artSet[ctrl.artIndex];
 
-        console.log('randomPic');
+        // console.log('randomPic');
         // console.log('ctrl.randomPainting: ', ctrl.randomPainting);
         getArtist();
     }
@@ -195,7 +212,7 @@ function ArtLessonController(artAPIService, $stateParams, $state, $timeout) {
                 }
             }
 
-            console.log('getArtPack');
+            // console.log('getArtPack');
             // console.log('ctrl.artSet: ', ctrl.artSet);
             randomPic();
         });
@@ -207,23 +224,29 @@ function ArtLessonController(artAPIService, $stateParams, $state, $timeout) {
         return artAPIService.artwork.get().$promise.then((data) => {
             ctrl.paintings = data.results;
 
-            console.log('getArt');
+            // console.log('getArt');
             // console.log('ctrl.paintings: ', ctrl.paintings);
             getArtPack();
         });
     }
 
 
+    function initVariableReset() {
+        ctrl.correctAnswer = false;
+        ctrl.incorrectAnswer = false;
+        ctrl.correctFirstTime = true;
+        ctrl.answeredInTime = true;
+        ctrl.showAnswerTimer = false;
+        // set number of seconds for answerTimer
+        ctrl.countDown = 5;
+        ctrl.modalID = 'null';
+    }
+
     // get next image and questions
     ctrl.nextQuestion = function nextQuestion() {
         // if there are more paintings in the pack
         if (ctrl.artSet.length >= 1) {
-            ctrl.correctAnswer = false;
-            ctrl.incorrectAnswer = false;
-            ctrl.correctFirstTime = true;
-            ctrl.answeredInTime = true;
-            ctrl.modalID = 'null';
-
+            initVariableReset();
             randomPic();
             wrongAnswers();
 
@@ -231,17 +254,12 @@ function ArtLessonController(artAPIService, $stateParams, $state, $timeout) {
         } else {
             $state.go('artLevels', { artpackId: $stateParams.artpackId });
         }
-        console.log('nextQuestion');
+        // console.log('nextQuestion');
     };
 
 
     function init() {
-        console.log("here at the init");
-        ctrl.correctAnswer = false;
-        ctrl.incorrectAnswer = false;
-        ctrl.correctFirstTime = true;
-        ctrl.answeredInTime = true;
-        ctrl.modalID = 'null';
+        initVariableReset();
         getArt();
     }
 

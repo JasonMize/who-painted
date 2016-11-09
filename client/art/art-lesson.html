@@ -70,6 +70,20 @@
 
     </div>
 
+    <div 
+        ng-show='lessonCtrl.showAnswerTimer' 
+    >
+        <div class="progress">
+            <div 
+                class="progress-bar progress-bar-info" 
+                role="progressbar" 
+                style="width: {{ lessonCtrl.countDown * 20 }}%;"
+            >
+                {{ lessonCtrl.countDown}}
+            </div>
+        </div>
+    </div>
+
 
     <div class='who-painted-prompt'>
         <h3>

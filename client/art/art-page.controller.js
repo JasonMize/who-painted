@@ -1,9 +1,7 @@
 import { range } from 'ramda';
-// import timer from 'angular-timer';
 
 function ArtPageController(artAPIService, $state, $timeout) {
     const ctrl = this;
-    // ctrl.timer = timer;
 
     // take user choice and determine right/wrong and take appropriate action
     ctrl.userChoice = function userChoice(selection) {
@@ -19,6 +17,8 @@ function ArtPageController(artAPIService, $state, $timeout) {
 
             // eslint-disable-next-line no-param-reassign
             selection.correct = true;
+            // if correct answer exit timer
+            $timeout.cancel(ctrl.stop);
             ctrl.correctAnswer = true;
             ctrl.incorrectAnswer = false;
             ctrl.modalID = 'modalCorrectAnswer';
@@ -36,32 +36,46 @@ function ArtPageController(artAPIService, $state, $timeout) {
     };
 
 
-    // set variable for random tile to true - triggers ng-class of fade-tile in html
-    function fadeTile() {
-        ctrl[`startFade${ctrl.randomTile}`] = true;
+    // timer until answer is incorrect
+    function answerTimer() {
+        ctrl.stop = $timeout(() => {
+            // decrement remaining seconds
+            ctrl.countDown -= 1;
+
+            // if zero, stop $timeout and make answer incorrect
+            if (ctrl.countDown < 1) {
+                $timeout.cancel(ctrl.stop);
+                ctrl.answeredInTime = false;
+            } else { // count down again
+                answerTimer();
+            }
+        }, 1000); // invoke every 1 second
     }
 
     // pick random tile to fade
     function revealOne() {
-        console.log('tileFade: ', ctrl.tileFade);
         if (ctrl.tileFade === true) {
             ctrl.maxRange = Math.floor(ctrl.tiles.length);
             ctrl.tileIndex = Math.floor(Math.random() * (ctrl.maxRange));
             ctrl.randomTile = ctrl.tiles.splice(ctrl.tileIndex, 1).pop();
 
-            fadeTile();
+            // set variable for random tile to true - triggers ng-class of fade-tile in html
+            ctrl[`startFade${ctrl.randomTile}`] = true;
 
+            // fade all tiles, wait till the last one finishes fading, do stuff
             if (ctrl.tiles.length > 0) {
+                // speed of tile fade
                 $timeout(revealOne, 200);
-            } else {
-                // count answer as incorrect if not provided before the tiles are all revealed
-                $timeout(() => {
-                    ctrl.answeredInTime = false;
+            } else { // count answer as incorrect if not provided before the tiles are all revealed
+                // wait till last tile finishes fading
+                ctrl.end = $timeout(() => {
+                    $timeout.cancel(ctrl.end);
+                    ctrl.showAnswerTimer = true;
+                    answerTimer();
                 }, 1500);
             }
         }
     }
-
 
     // setup for slow reveal of image
     function revealImage() {
@@ -197,16 +211,22 @@ function ArtPageController(artAPIService, $state, $timeout) {
     }
 
 
+    function initVariableReset() {
+        ctrl.correctAnswer = false;
+        ctrl.incorrectAnswer = false;
+        ctrl.correctFirstTime = true;
+        ctrl.answeredInTime = true;
+        ctrl.showAnswerTimer = false;
+        // set number of seconds for answerTimer
+        ctrl.countDown = 5;
+        ctrl.modalID = 'null';
+    }
+
     // get next image and questions
     ctrl.nextQuestion = function nextQuestion() {
         // if there are more paintings in the pack
         if (ctrl.artSet.length >= 1) {
-            ctrl.correctAnswer = false;
-            ctrl.incorrectAnswer = false;
-            ctrl.correctFirstTime = true;
-            ctrl.answeredInTime = true;
-            ctrl.modalID = 'null';
-
+            initVariableReset();
             randomPic();
             wrongAnswers();
 
@@ -217,13 +237,8 @@ function ArtPageController(artAPIService, $state, $timeout) {
         // console.log('nextQuestion');
     };
 
-
     function init() {
-        ctrl.correctAnswer = false;
-        ctrl.incorrectAnswer = false;
-        ctrl.correctFirstTime = true;
-        ctrl.answeredInTime = true;
-        ctrl.modalID = 'null';
+        initVariableReset();
         getArt();
     }
 

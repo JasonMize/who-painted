@@ -10,7 +10,7 @@ function ArtLessonController(artAPIService, $stateParams, $state, $timeout) {
     },
         // if not logged in load state...
         () => {
-            $state.go('artPage');
+          $state.go('artPage');
         });
 
     // identifies what lesson we are working on

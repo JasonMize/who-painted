@@ -1,1 +1,1 @@
-web: gunicorn conf.wsgi
+web: node app.js

@@ -10,3 +10,5 @@ Pillow==3.4.2
 
 django-storages==1.5.1
 boto==2.43.0
+
+django_heroku==0.3.1

@@ -38,14 +38,14 @@ class UserLevelAdmin(admin.ModelAdmin):
     )
 
 
-class UserArtPackAdmin(admin.ModelAdmin):
-    list_display = (
-        'user',
-        'artPack',
-    )
+# class UserArtPackAdmin(admin.ModelAdmin):
+#     list_display = (
+#         'user',
+#         'artPack',
+#     )
 
 
-admin.site.register(UserArtPack, UserArtPackAdmin)
+# admin.site.register(UserArtPack, UserArtPackAdmin)
 admin.site.register(UserLevel, UserLevelAdmin)
 admin.site.register(Level, LevelAdmin)
 admin.site.register(Artist, ArtistAdmin)

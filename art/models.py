@@ -12,15 +12,6 @@ class Level(models.Model):
     def __str__(self):
         return self.title
 
-
-class Artist(models.Model):
-    name = models.CharField(max_length=40)
-    artwork = models.ManyToManyField(Artwork, blank=True, null=True)
-
-    def __str__(self):
-        return self.name
-
-
 class Artwork(models.Model):
     title = models.CharField(max_length=80)
     image = models.ImageField(upload_to='artworks', blank=True, null=True)
@@ -29,6 +20,12 @@ class Artwork(models.Model):
     def __str__(self):
         return self.title
 
+class Artist(models.Model):
+    name = models.CharField(max_length=40)
+    artwork = models.ManyToManyField(Artwork, blank=True, null=True)
+
+    def __str__(self):
+        return self.name
 
 class ArtPack(models.Model):
     owner = models.ForeignKey(User, blank=True, null=True)

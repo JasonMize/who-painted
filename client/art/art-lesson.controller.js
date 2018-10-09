@@ -10,16 +10,17 @@ function ArtLessonController(artAPIService, $stateParams, $state, $timeout) {
     },
         // if not logged in load state...
         () => {
-            $state.go('artPage');
+          $state.go('artPage');
         });
 
     // identifies what lesson we are working on
     function getLesson() {
-        const id = { id: $stateParams.lessonId };
+        console.log('$stateParams.levelId: ', $stateParams.levelId);
+        const id = { id: $stateParams.levelId };
+        console.log('id: ', id);
         return artAPIService.artpacklevel.get(id).$promise.then((data) => {
             ctrl.lesson = data.level_set;
-
-            console.log('lesson data: ', data);
+            console.log('ctrl.lesson: ', ctrl.lesson);
         });
     }
 
@@ -260,11 +261,11 @@ function ArtLessonController(artAPIService, $stateParams, $state, $timeout) {
 
     function init() {
         initVariableReset();
+        getLesson();
         getArt();
     }
 
     init();
-    getLesson();
 }
 
 export default ArtLessonController;

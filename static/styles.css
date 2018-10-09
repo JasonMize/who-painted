@@ -58,8 +58,8 @@ hr {
 .tiles {
     height: 13vh;
     background-color: #fff;
-    /*opacity: .5;*/
-    /*background-color: red;*/
+/*    opacity: .5;
+    background-color: red;*/
 }
 .tile-fade {
     animation-name: tile-fade;
@@ -81,9 +81,6 @@ hr {
     font-size: 3em;
     color: #d9534f;
     margin: 0px 25px -10px 25px;
-    /*margin-left: 25px;*/
-    /*margin-bottom: -10px;*/
-    /*vertical-align: bottom;*/
 }
 .correct-check {
     font-size: 3em;

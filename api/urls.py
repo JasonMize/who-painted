@@ -8,8 +8,8 @@ from accounts.views import CurrentUserDetails
 
 router = routers.DefaultRouter()
 
-router.register(r'userartpack', UserArtPackViewSet)
-router.register(r'userlevel', UserLevelViewSet)
+# router.register(r'userartpack', UserArtPackViewSet)
+# router.register(r'userlevel', UserLevelViewSet)
 router.register(r'level', LevelViewSet)
 router.register(r'artpack', ArtPackViewSet)
 router.register(r'artwork', ArtworkViewSet)

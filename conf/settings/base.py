@@ -118,7 +118,3 @@ LOGOUT_URL = reverse_lazy('accounts:logout')
 
 STATIC_URL = '/static/'
 
-
-# Configure Django App for Heroku.
-import django_heroku
-django_heroku.settings(locals())

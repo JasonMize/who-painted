@@ -32,3 +32,7 @@ AWS_S3_CUSTOM_DOMAIN = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
 
 
 
+
+# Configure Django App for Heroku.
+import django_heroku
+django_heroku.settings(locals())

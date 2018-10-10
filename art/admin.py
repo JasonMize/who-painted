@@ -12,9 +12,9 @@ class ArtistAdmin(admin.ModelAdmin):
 class ArtworkAdmin(admin.ModelAdmin):
     list_display = (
         'title',
-        'artist',
+        # 'artist',
         'image',
-        # 'artPack',
+        # 'artpack',
         'description'
     )
 
@@ -28,7 +28,7 @@ class ArtPackAdmin(admin.ModelAdmin):
 class LevelAdmin(admin.ModelAdmin):
     list_display = (
         'title',
-        # 'artPack',
+        # 'artpack',
     )
 
 

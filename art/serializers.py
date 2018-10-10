@@ -30,11 +30,11 @@ class ArtworkSerializer(serializers.ModelSerializer):
         model = Artwork
         fields = (
             'id',
-            'artist',
             'title',
             'image',
-            # 'artPack',
             'description',
+            'artist',
+            'artPack',
         )
 
 
